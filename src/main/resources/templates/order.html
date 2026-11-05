@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Online — Friends Cafe Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5EFE6;
+            --warm-white: #FDFAF6;
+            --espresso: #1C0F0A;
+            --brown: #3D1F10;
+            --caramel: #C28A50;
+            --gold: #D4A85A;
+            --muted: #8C7B6E;
+            --border: rgba(194, 138, 80, 0.2);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--warm-white);
+            color: var(--espresso);
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--caramel);
+            border-radius: 4px;
+        }
+
+        /* ========== NAVBAR ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 60px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(28, 15, 10, 0.97);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(212, 168, 90, 0.12);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .nav-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--gold);
+        }
+
+        .nav-cta {
+            background: var(--gold);
+            color: var(--espresso) !important;
+            padding: 9px 24px;
+            border-radius: 2px;
+            font-weight: 600 !important;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: white !important;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            height: 50vh;
+            min-height: 380px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=90') center/cover no-repeat;
+            transform: scale(1.05);
+            animation: heroZoom 10s ease-out forwards;
+        }
+
+        @keyframes heroZoom {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(18, 8, 3, 0.75) 0%, rgba(28, 15, 10, 0.88) 100%);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 0.9s ease forwards;
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .hero-eyebrow span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .eyebrow-line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.6;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(48px, 7vw, 88px);
+            color: white;
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-strip {
+            background: var(--espresso);
+            padding: 0 60px;
+            border-bottom: 1px solid rgba(212, 168, 90, 0.12);
+        }
+
+        .progress-inner {
+            display: flex;
+            justify-content: center;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .progress-inner::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 16%;
+            right: 16%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            z-index: 0;
+        }
+
+        .step-indicator {
+            flex: 1;
+            text-align: center;
+            padding: 22px 20px;
+            position: relative;
+            z-index: 1;
+            cursor: default;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 8px;
+            transition: all 0.4s ease;
+            background: var(--espresso);
+        }
+
+        .step-label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.3s;
+        }
+
+        .step-indicator.active .step-num {
+            border-color: var(--gold);
+            color: var(--espresso);
+            background: var(--gold);
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--gold);
+        }
+
+        .step-indicator.completed .step-num {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: transparent;
+        }
+
+        .step-indicator.completed .step-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ========== MAIN LAYOUT ========== */
+        .order-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: calc(100vh - 72px);
+        }
+
+        /* ========== FORM SECTION ========== */
+        .form-section {
+            padding: 70px 80px 100px;
+        }
+
+        .step-panel {
+            display: none;
+            animation: sectionFade 0.5s ease;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        @keyframes sectionFade {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-label-row::before {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+        .form-label-row span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--caramel);
+        }
+
+        .form-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 300;
+            color: var(--espresso);
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .form-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+        .form-subtitle {
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 48px;
+            max-width: 500px;
+        }
+
+        /* ---- Inputs ---- */
+        .field-group {
+            margin-bottom: 32px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--brown);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Jost', sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            color: var(--espresso);
+            background: var(--warm-white);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .field-input::placeholder {
+            color: var(--muted);
+            opacity: 0.6;
+        }
+
+        .field-input:focus {
+            border-color: var(--caramel);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(194, 138, 80, 0.08);
+        }
+
+        select.field-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C7B6E' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            padding-right: 44px;
+            cursor: pointer;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ---- Size Selector ---- */
+        .size-grid {
+            display: flex;
+            gap: 12px;
+        }
+
+        .size-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .size-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .size-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 20px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--warm-white);
+        }
+
+        .size-icon {
+            font-size: 28px;
+            transition: transform 0.3s;
+        }
+
+        .size-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--espresso);
+        }
+
+        .size-ml {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .size-option input:checked+.size-card {
+            border-color: var(--caramel);
+            background: white;
+            box-shadow: 0 4px 20px rgba(194, 138, 80, 0.12);
+        }
+
+        .size-option input:checked+.size-card .size-icon {
+            transform: scale(1.15);
+        }
+
+        .size-option input:checked+.size-card .size-name {
+            color: var(--caramel);
+        }
+
+        /* ---- Extras (Checkboxes) ---- */
+        .extras-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .extra-option {
+            position: relative;
+        }
+
+        .extra-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .extra-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--warm-white);
+        }
+
+        .extra-emoji {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .extra-info {
+            flex: 1;
+        }
+
+        .extra-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--espresso);
+            margin-bottom: 2px;
+        }
+
+        .extra-price-tag {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .extra-check {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid var(--border);
+            border-radius: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 12px;
+            color: transparent;
+        }
+
+        .extra-option input:checked+.extra-card {
+            border-color: var(--caramel);
+            background: white;
+            box-shadow: 0 4px 20px rgba(194, 138, 80, 0.1);
+        }
+
+        .extra-option input:checked+.extra-card .extra-check {
+            border-color: var(--caramel);
+            background: var(--caramel);
+            color: white;
+        }
+
+        /* ---- Quantity ---- */
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .qty-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: var(--cream);
+            color: var(--espresso);
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Jost', sans-serif;
+        }
+
+        .qty-btn:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+        .qty-value {
+            width: 60px;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--espresso);
+            border: none;
+            background: white;
+            outline: none;
+        }
+
+        /* ---- Promo Code ---- */
+        .promo-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .promo-row .field-input {
+            flex: 1;
+        }
+
+        .promo-apply {
+            padding: 16px 28px;
+            border: 1px solid var(--caramel);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--caramel);
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .promo-apply:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+        /* ---- Textarea ---- */
+        textarea.field-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ---- Action Buttons ---- */
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .btn-next {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gold);
+            color: var(--espresso);
+            padding: 16px 36px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid var(--gold);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-next:hover {
+            background: white;
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--muted);
+            padding: 16px 30px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 400;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            border-color: var(--caramel);
+            color: var(--caramel);
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--espresso);
+            color: white;
+            padding: 16px 44px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid var(--espresso);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--brown);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(28, 15, 10, 0.25);
+        }
+
+        /* ========== SIDEBAR (Summary) ========== */
+        .order-sidebar {
+            background: var(--espresso);
+            padding: 60px 40px;
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(212, 168, 90, 0.3);
+        }
+
+        .order-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .sidebar-header {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .sidebar-label::before {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        .sidebar-label span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .sidebar-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 300;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .sidebar-title em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        /* Summary Items */
+        .summary-items {
+            flex: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 28px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-key {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        .summary-val {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            text-align: right;
+            max-width: 180px;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: rgba(212, 168, 90, 0.2);
+            margin: 20px 0;
+        }
+
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .summary-total-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .summary-empty {
+            text-align: center;
+            padding: 60px 0;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .summary-empty-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Sidebar artwork */
+        .sidebar-art {
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-art img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 4px;
+            filter: brightness(0.6);
+        }
+
+        .sidebar-art-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--espresso);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 4px;
+            border-left: 3px solid var(--gold);
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ========== SUCCESS OVERLAY ========== */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(28, 15, 10, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: overlayIn 0.5s ease;
+        }
+
+        .success-overlay.visible {
+            display: flex;
+        }
+
+        @keyframes overlayIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .success-card {
+            background: var(--warm-white);
+            padding: 60px 60px 50px;
+            border-radius: 6px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            animation: cardPop 0.5s 0.1s ease both;
+        }
+
+        @keyframes cardPop {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .success-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 300;
+            color: var(--espresso);
+            margin-bottom: 12px;
+        }
+
+        .success-card h2 em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+        .success-card p {
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .order-id {
+            display: inline-block;
+            background: var(--cream);
+            border: 1px solid var(--border);
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--caramel);
+            letter-spacing: 2px;
+            margin: 20px 0 30px;
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: #0D0705;
+            padding: 40px 60px 24px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .footer-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.18);
+            text-align: center;
+        }
+
+        /* ========== REVEAL ========== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1100px) {
+            .order-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+                order: -1;
+                padding: 40px;
+            }
+
+            .sidebar-art {
+                display: none;
+            }
+
+            .form-section {
+                padding: 50px 40px 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .form-section {
+                padding: 40px 24px 60px;
+            }
+
+            .order-sidebar {
+                padding: 30px 24px;
+            }
+
+            .progress-strip {
+                padding: 0 20px;
+            }
+
+            .extras-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 30px 24px 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-next,
+            .btn-back,
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .size-grid {
+                flex-wrap: wrap;
+            }
+
+            .size-option {
+                min-width: calc(50% - 6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="friends-cafe-home.html" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+            <li><a th:href="@{/order}" class="active">Order</a></li>
+            <li><a th:href="@{/reservation}" class="nav-cta">Reserve Table</a></li>
+        </ul>
+    </nav>
+
+   <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <div class="eyebrow-line"></div>
+                <span>Friends Cafe Bar — Order Online</span>
+                <div class="eyebrow-line"></div>
+            </div>
+            <h1>Craft Your <em>Brew</em></h1>
+            <p>Build your perfect cup, just the way you love it. Premium beans, artisan preparation, delivered to your
+                table.</p>
+        </div>
+    </section>
+
+    <div class="progress-strip">
+        <div class="progress-inner">
+            <div class="step-indicator active" data-step="1">
+                <div class="step-num">01</div>
+                <span class="step-label">Choose</span>
+            </div>
+            <div class="step-indicator" data-step="2">
+                <div class="step-num">02</div>
+                <span class="step-label">Customize</span>
+            </div>
+            <div class="step-indicator" data-step="3">
+                <div class="step-num">03</div>
+                <span class="step-label">Confirm</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-layout">
+
+<form class="form-section" th:action="@{/order}" method="post">
+
+    <!-- ================= STEP 1 ================= -->
+    <div class="step-panel active" id="step1">
+
+        <div class="form-label-row"><span>Step 01</span></div>
+        <h2 class="form-title">Select Your<br><em>Coffee</em></h2>
+        <p class="form-subtitle">
+            Start by telling us your name and choosing your coffee base.
+        </p>
+
+        <div class="field-group">
+            <label class="field-label">Your Name</label>
+            <input type="text"
+                   class="field-input"
+                   id="customerName"
+                   name="customerName"
+                   required>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Mobile Number</label>
+            <input type="tel"
+                   class="field-input"
+                   id="customerPhone"
+                   name="customerPhone">
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Select Coffee</label>
+            <select class="field-input"
+                    id="coffeeType"
+                    name="coffeeType"
+                    required>
+
+                <option value="" disabled selected>— Choose your base —</option>
+                <option value="Signature Espresso|120">Signature Espresso — ₹120</option>
+                <option value="Classic Cappuccino|150">Classic Cappuccino — ₹150</option>
+                <option value="Hazelnut Latte|160">Hazelnut Latte — ₹160</option>
+                <option value="Rose Latte|180">Rose Latte — ₹180</option>
+                <option value="Dark Mocha|200">Dark Mocha — ₹200</option>
+                <option value="Cold Brew Tonic|180">Cold Brew Tonic — ₹180</option>
+                <option value="Flat White|165">Flat White — ₹165</option>
+                <option value="Ceremonial Matcha|190">Ceremonial Matcha — ₹190</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-next" onclick="goToStep(2)">
+                Continue →
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ================= STEP 2 ================= -->
+    <div class="step-panel" id="step2">
+
+        <div class="form-label-row"><span>Step 02</span></div>
+        <h2 class="form-title">Customize<br>Your <em>Order</em></h2>
+
+        <!-- SIZE -->
+        <div class="field-group">
+            <label class="field-label">Choose Size</label>
+
+            <div class="size-grid">
+
+                <label class="size-option">
+                    <input type="radio" name="size" value="S|0" onchange="updateSummary()">
+                    <div class="size-card">
+                        <span class="size-icon">☕</span>
+                        <span class="size-name">Small</span>
+                        <span class="size-ml">200 ML</span>
+                    </div>
+                </label>
+
+                <label class="size-option">
+                    <input type="radio" name="size" value="M|20" checked onchange="updateSummary()">
+                    <div class="size-card">
+                        <span class="size-icon">☕️</span>
+                        <span class="size-name">Medium</span>
+                        <span class="size-ml">350 ML</span>
+                    </div>
+                </label>
+
+                <label class="size-option">
+                    <input type="radio" name="size" value="L|40" onchange="updateSummary()">
+                    <div class="size-card">
+                        <span class="size-icon">🍵</span>
+                        <span class="size-name">Large</span>
+                        <span class="size-ml">500 ML</span>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+
+        <!-- EXTRAS -->
+        <div class="field-group">
+            <label class="field-label">Add-ons & Extras</label>
+
+            <div class="extras-grid">
+
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Extra Shot|30" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">⚡</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Extra Espresso Shot</div>
+                            <div class="extra-price-tag">+₹30</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Whipped Cream|20" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🍦</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Whipped Cream</div>
+                            <div class="extra-price-tag">+₹20</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Caramel Drizzle|15" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🍯</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Caramel Drizzle</div>
+                            <div class="extra-price-tag">+₹15</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="field-group">
+            <label class="field-label">Quantity</label>
+
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+                <input type="text"
+                       class="qty-value"
+                       id="qtyValue"
+                       name="quantity"
+                       value="1"
+                       readonly>
+                <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-back" onclick="goToStep(1)">← Back</button>
+            <button type="button" class="btn-next" onclick="goToStep(3)">Continue →</button>
+        </div>
+
+    </div>
+
+    <!-- ================= STEP 3 ================= -->
+    <div class="step-panel" id="step3">
+
+        <div class="form-label-row"><span>Step 03</span></div>
+
+        <div class="field-group">
+            <label class="field-label">Special Instructions</label>
+            <textarea class="field-input"
+                      id="specialNotes"
+                      name="specialNotes"></textarea>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Promo Code</label>
+            <div class="promo-row">
+                <input type="text"
+                       class="field-input"
+                       id="promoCode"
+                       name="promoCode">
+                <button type="button" class="promo-apply" onclick="applyPromo()">
+                    Apply
+                </button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-back" onclick="goToStep(2)">← Back</button>
+
+            <button type="submit"
+                    class="btn-submit"
+                    onclick="placeOrder(event)">
+                Place Order ☕
+            </button>
+        </div>
+
+    </div>
+
+</form>
+
+
+
+<div class="order-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-label"><span>Your Order</span></div>
+                <div class="sidebar-title">Order<br><em>Summary</em></div>
+            </div>
+
+            <div class="summary-items" id="summaryContent">
+                <div class="summary-empty">
+                    <div class="summary-empty-icon">☕</div>
+                    <p>Your order is empty.<br>Start by selecting a coffee.</p>
+                </div>
+            </div>
+
+            <div class="sidebar-art">
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Friends Cafe">
+                <p class="sidebar-art-text">"Every cup tells a story.<br>What's yours?"</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- SUCCESS OVERLAY -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-card">
+            <div class="success-icon">✨</div>
+            <h2>Order <em>Placed!</em></h2>
+            <p>Your barista is already warming up. Sit back, relax, and let us craft something magical for you.</p>
+            <div class="order-id" id="orderId">FCB-2026-0001</div>
+            <p style="font-size:13px;">Show this order ID at the counter or wait for table delivery.</p>
+            <div class="success-actions">
+                <a th:href="@{/menu}" class="btn-back" style="text-decoration:none;">Browse Menu</a>
+                <a th:href="@{/home}" class="btn-next" style="text-decoration:none;">Back Home →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p class="footer-copy">© 2026 Friends Cafe Bar. Crafted with love in Ahmedabad, India 🇮🇳</p>
+    </footer>
+
+    <script>
+        // ========== STATE ==========
+        let currentStep = 1;
+        let promoApplied = false;
+        let promoDiscount = 0;
+
+        // ========== STEP NAVIGATION ==========
+        function goToStep(step) {
+            // Validation
+            if (step === 2 && currentStep === 1) {
+                const name = document.getElementById('customerName').value.trim();
+                const coffee = document.getElementById('coffeeType').value;
+                if (!name) { showToast('Please enter your name'); return; }
+                if (!coffee) { showToast('Please select a coffee'); return; }
+            }
+
+            currentStep = step;
+
+            // Update panels
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+
+            // Update indicators
+            document.querySelectorAll('.step-indicator').forEach(ind => {
+                const s = parseInt(ind.dataset.step);
+                ind.classList.remove('active', 'completed');
+                if (s === step) ind.classList.add('active');
+                else if (s < step) ind.classList.add('completed');
+            });
+
+            // Update summary
+            updateSummary();
+
+            // Scroll to top of form
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========== QUANTITY ==========
+        function changeQty(delta) {
+            const el = document.getElementById('qtyValue');
+            let val = parseInt(el.value) + delta;
+            if (val < 1) val = 1;
+            if (val > 10) val = 10;
+            el.value = val;
+            updateSummary();
+        }
+
+        // ========== LIVE SUMMARY ==========
+        function updateSummary() {
+            const name = document.getElementById('customerName').value.trim();
+            const coffeeRaw = document.getElementById('coffeeType').value;
+            const sizeRaw = document.querySelector('input[name="size"]:checked')?.value || '';
+            const extras = document.querySelectorAll('input[name="extras"]:checked');
+            const qty = parseInt(document.getElementById('qtyValue').value);
+
+            const container = document.getElementById('summaryContent');
+
+            if (!coffeeRaw) {
+                container.innerHTML = `
+                    <div class="summary-empty">
+                        <div class="summary-empty-icon">☕</div>
+                        <p>Your order is empty.<br>Start by selecting a coffee.</p>
+                    </div>`;
+                return;
+            }
+
+            const [coffeeName, coffeePrice] = coffeeRaw.split('|');
+            const [sizeName, sizePrice] = sizeRaw.split('|');
+            const sizeLabels = { S: 'Small', M: 'Medium', L: 'Large' };
+            const basePrice = parseInt(coffeePrice) + parseInt(sizePrice || 0);
+
+            let extrasHTML = '';
+            let extrasTotal = 0;
+            extras.forEach(e => {
+                const [eName, ePrice] = e.value.split('|');
+                extrasTotal += parseInt(ePrice);
+                extrasHTML += `
+                    <div class="summary-row">
+                        <span class="summary-key">+ ${eName}</span>
+                        <span class="summary-val">₹${ePrice}</span>
+                    </div>`;
+            });
+
+            const unitPrice = basePrice + extrasTotal;
+            let total = unitPrice * qty;
+            let discountHTML = '';
+
+            if (promoApplied) {
+                const discountAmount = Math.round(total * promoDiscount);
+                discountHTML = `
+                    <div class="summary-row">
+                        <span class="summary-key" style="color:var(--gold);">Promo Discount</span>
+                        <span class="summary-val" style="color:var(--gold);">-₹${discountAmount}</span>
+                    </div>`;
+                total -= discountAmount;
+            }
+
+            container.innerHTML = `
+                ${name ? `<div class="summary-row">
+                    <span class="summary-key">Customer</span>
+                    <span class="summary-val">${name}</span>
+                </div>` : ''}
+                <div class="summary-row">
+                    <span class="summary-key">Coffee</span>
+                    <span class="summary-val">${coffeeName}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-key">Size</span>
+                    <span class="summary-val">${sizeLabels[sizeName] || 'Medium'} ${parseInt(sizePrice) > 0 ? '(+₹' + sizePrice + ')' : ''}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-key">Base Price</span>
+                    <span class="summary-val">₹${basePrice}</span>
+                </div>
+                ${extrasHTML}
+                <div class="summary-row">
+                    <span class="summary-key">Quantity</span>
+                    <span class="summary-val">×${qty}</span>
+                </div>
+                ${discountHTML}
+                <div class="summary-divider"></div>
+                <div class="summary-total-row">
+                    <span class="summary-total-label">Total</span>
+                    <span class="summary-total-value">₹${total}</span>
+                </div>
+            `;
+        }
+
+        // ========== PROMO CODE ==========
+        function applyPromo() {
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const msgEl = document.getElementById('promoMsg');
+
+            if (code === 'FRIENDS50') {
+                promoApplied = true;
+                promoDiscount = 0.50;
+                msgEl.style.color = '#2a7a4a';
+                msgEl.textContent = '✓ Promo applied! 50% discount added.';
+                showToast('🎉 Promo FRIENDS50 applied — 50% off!');
+            } else if (code === 'FRIENDS20') {
+                promoApplied = true;
+                promoDiscount = 0.20;
+                msgEl.style.color = '#2a7a4a';
+                msgEl.textContent = '✓ Promo applied! 20% discount added.';
+                showToast('🎉 Promo FRIENDS20 applied — 20% off!');
+            } else {
+                promoApplied = false;
+                promoDiscount = 0;
+                msgEl.style.color = '#c0392b';
+                msgEl.textContent = '✗ Invalid promo code. Try FRIENDS50.';
+            }
+
+            msgEl.style.display = 'block';
+            updateSummary();
+        }
+
+        // ========== PLACE ORDER ==========
+     // 5. Final Validation & Show YOUR Custom Popup
+     /*   function placeOrder(event) {
+            // Prevent the form from instantly refreshing the page
+            if (event) event.preventDefault(); 
+
+            const coffeeSelect = document.getElementById('coffeeType');
+            if (!coffeeSelect.value) {
+                showToast("Please select a coffee first!");
+                goToStep(1); 
+                return false; 
+            }
+            */
+            // Generate a random Order ID for the UI
+         /*   const randomId = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('orderId').innerText = `FCB-2026-${randomId}`;
+
+            // Show YOUR custom Success Overlay using your CSS class
+            const overlay = document.getElementById('successOverlay');
+            overlay.classList.add('visible'); // This triggers your CSS!
+
+            return false; 
+        }*/
+        function placeOrder(event) {
+
+            const name = document.getElementById('customerName').value.trim();
+            const coffee = document.getElementById('coffeeType').value;
+
+            if (!name) {
+                showToast("Please enter your name!");
+                goToStep(1);
+                event.preventDefault();
+                return;
+            }
+
+            if (!coffee) {
+                showToast("Please select a coffee!");
+                goToStep(1);
+                event.preventDefault();
+                return;
+            }
+
+            // DO NOT block submission
+        }
+
+        // Helper function for your Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.innerText = message;
+                // Add your visible class here if your toast CSS uses it, 
+                // otherwise setting display works:
+                toast.style.display = 'block'; 
+                
+                // Hide it after 3 seconds
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3000);
+            } else {
+                alert(message); // Fallback if toast CSS isn't ready
+            }
+        }
+
+        // ========== REVEAL ANIMATION ==========
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) e.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ========== INITIAL LISTENERS ==========
+        document.getElementById('customerName').addEventListener('input', updateSummary);
+        document.getElementById('coffeeType').addEventListener('change', updateSummary);
+       
+    </script>
+    
+    
+    <script th:if="${success}">
+    window.onload = function() {
+        document.getElementById('successOverlay').classList.add('visible');
+        document.getElementById('orderId').innerText = 'FCB-2026-' + [[${orderId}]];
+    }
+</script>
+
+</body>
+
+</html>

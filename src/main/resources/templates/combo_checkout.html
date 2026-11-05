@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout — Friends Cafe Bar</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. DESIGN TOKENS & VARIABLES (Enterprise Architecture)
+           ========================================================================== */
+        :root {
+            --bg-base: #030201;
+            --bg-surface: #0A0705;
+            --bg-elevated: #120A06;
+            --gold-light: #FCEABB;
+            --gold-primary: #D4A85A;
+            --gold-dark: #A87B32;
+            --success-base: #48BB78;
+            --success-glow: rgba(72, 187, 120, 0.2);
+            --text-pure: #FFFFFF;
+            --text-off: rgba(255, 255, 255, 0.85);
+            --text-muted: #8E7D70;
+            --glass-bg: rgba(20, 12, 8, 0.4);
+            --glass-border: rgba(212, 168, 90, 0.1);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --shadow-deep: 0 30px 60px rgba(0, 0, 0, 0.8);
+            --glow-gold: 0 0 20px rgba(212, 168, 90, 0.15);
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Jost', sans-serif;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        /* ==========================================================================
+           2. GLOBAL RESET & BASE STYLES
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: var(--gold-primary); color: var(--bg-base); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
+        
+        body {
+            font-family: var(--font-sans); background-color: var(--bg-base); color: var(--text-pure);
+            display: flex; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 100% 0%, rgba(212, 168, 90, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 0% 100%, rgba(212, 168, 90, 0.03) 0%, transparent 40%);
+        }
+
+        .checkout-container { display: flex; width: 100%; max-width: 1800px; margin: 0 auto; min-height: 100vh; }
+
+        /* ==========================================================================
+           3. LEFT PANEL: THE VISUAL SHOWCASE
+           ========================================================================== */
+        .visual-panel {
+            flex: 1.2; position: relative; padding: 80px; display: flex; flex-direction: column;
+            justify-content: center; background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+            border-right: 1px solid var(--glass-border); animation: slideInLeft 1.2s var(--ease-out-expo) forwards;
+            overflow: hidden;
+        }
+
+        .visual-panel::before {
+            content: ''; position: absolute; inset: 0; opacity: 0.3;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .back-link {
+            position: absolute; top: 40px; left: 80px; z-index: 10; color: var(--text-muted);
+            text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 3px;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+        }
+        .back-link:hover { color: var(--gold-light); transform: translateX(-5px); }
+
+        .visual-image-wrapper {
+            position: relative; width: 100%; max-width: 650px; aspect-ratio: 4/3;
+            border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-deep);
+            margin-bottom: 50px; border: 1px solid rgba(255, 255, 255, 0.03);
+            transform: translateY(0); transition: transform 0.5s ease;
+        }
+        
+        .visual-image-wrapper:hover { transform: translateY(-10px); box-shadow: 0 40px 80px rgba(0,0,0,0.9), var(--glow-gold); }
+
+        .visual-image-wrapper::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(5,3,2,0.8) 100%),
+                        radial-gradient(circle at 50% 50%, transparent 20%, rgba(212,168,90,0.1) 100%);
+            pointer-events: none; z-index: 60;
+        }
+
+        /* 🔥 FIX: PRIORITY BADGE Z-INDEX 🔥 */
+        .priority-badge {
+            position: absolute; top: 25px; left: 25px; 
+            z-index: 100; /* Stays above the images */
+            background: rgba(10,5,2,0.6); backdrop-filter: blur(12px);
+            border: 1px solid var(--gold-dark); color: var(--gold-light);
+            padding: 8px 18px; border-radius: 50px; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); animation: pulseBadge 3s infinite;
+        }
+
+        .combo-info { max-width: 600px; position: relative; z-index: 2; }
+        .combo-info h1 {
+            font-family: var(--font-serif); font-size: clamp(48px, 5vw, 64px); font-weight: 300;
+            line-height: 1.1; margin-bottom: 20px; background: linear-gradient(to right, var(--text-pure), var(--text-muted));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .combo-info p { font-size: 16px; color: var(--text-muted); line-height: 1.8; font-weight: 300; }
+
+        /* ==========================================================================
+           4. RIGHT PANEL: THE CHECKOUT FORM
+           ========================================================================== */
+        .form-panel {
+            flex: 0.8; padding: 80px 100px; display: flex; flex-direction: column;
+            justify-content: center; background: var(--bg-base); position: relative;
+            animation: slideInRight 1.2s var(--ease-out-expo) forwards;
+        }
+
+        .checkout-header { margin-bottom: 50px; }
+        .checkout-header h2 { font-size: 28px; font-weight: 400; letter-spacing: 1px; margin-bottom: 10px; }
+        .checkout-header p { font-size: 14px; color: var(--text-muted); font-weight: 300;}
+
+        .price-summary {
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight); border-radius: 20px; padding: 35px;
+            margin-bottom: 50px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden;
+        }
+        
+        .price-summary::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 0%, rgba(212,168,90,0.05), transparent 50%); pointer-events: none;
+        }
+
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 14px; color: var(--text-muted); }
+        .price-row:last-of-type { margin-bottom: 0; }
+        
+        .price-row.total {
+            border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 25px; margin-top: 25px;
+            color: var(--text-pure); font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
+        }
+        
+        .total-val { font-family: var(--font-serif); font-size: 48px; color: var(--gold-light); font-weight: 400; line-height: 1; text-shadow: var(--glow-gold); }
+        
+        .savings-tag {
+            display: inline-block; background: rgba(72, 187, 120, 0.1); color: var(--success-base);
+            padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.5px; border: 1px solid var(--success-glow); margin-top: 15px;
+        }
+
+        .form-group { margin-bottom: 35px; position: relative; }
+        .form-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 18px 20px; background: var(--bg-elevated); border: 1px solid transparent;
+            border-bottom: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-pure);
+            font-family: var(--font-sans); font-size: 16px; transition: all 0.3s ease; outline: none; position: relative; z-index: 2;
+        }
+        
+        .form-group::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px;
+            background: var(--gold-primary); transition: all 0.4s ease; z-index: 3;
+        }
+        .form-group:focus-within::after { left: 0; width: 100%; box-shadow: 0 -2px 10px rgba(212,168,90,0.5); }
+        .form-group input:focus, .form-group select:focus { background: rgba(20, 12, 8, 0.8); border-bottom-color: transparent; }
+        .form-group input::placeholder { color: rgba(255,255,255,0.15); font-weight: 300; }
+
+        select {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E5C158%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto;
+        }
+        select option { background: var(--bg-surface); color: var(--text-pure); padding: 15px;}
+
+        .btn-submit {
+            width: 100%; padding: 22px; background: linear-gradient(120deg, var(--gold-dark), var(--gold-primary), var(--gold-light), var(--gold-primary));
+            background-size: 200% auto; color: var(--bg-base); border: none; border-radius: 12px;
+            font-family: var(--font-sans); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 4px;
+            cursor: pointer; transition: all 0.4s ease; margin-top: 20px; box-shadow: 0 10px 20px rgba(212, 168, 90, 0.15);
+        }
+        .btn-submit:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 168, 90, 0.3); color: black; }
+
+        @keyframes slideInLeft { 0% { opacity: 0; transform: translateX(-50px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInRight { 0% { opacity: 0; transform: translateX(50px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes pulseBadge { 0% { box-shadow: 0 0 0 0 rgba(212, 168, 90, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(212, 168, 90, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 168, 90, 0); } }
+
+        @media (max-width: 1200px) { .form-panel, .visual-panel { padding: 60px; } .combo-info h1 { font-size: 42px; } }
+        @media (max-width: 992px) { .checkout-container { flex-direction: column; } .visual-panel { flex: none; border-right: none; border-bottom: 1px solid var(--glass-border); min-height: auto;} .visual-image-wrapper { max-width: 100%; aspect-ratio: 16/9; } .form-panel { flex: none; } }
+        @media (max-width: 480px) { .visual-panel, .form-panel { padding: 40px 20px; } .price-summary { padding: 25px; } .total-val { font-size: 36px; } .btn-submit { padding: 18px; font-size: 12px; } }
+    </style>
+</head>
+<body>
+ <div th:replace="~{common/cart-fragment :: cart-icon}"></div>
+    <div class="checkout-container">
+        
+        <div class="visual-panel">
+            <a th:href="@{/combos}" class="back-link">← Back to Menu</a>
+            
+            <div class="visual-image-wrapper">
+                <div class="priority-badge">⚡ Priority Prep</div>
+                <div id="comboImageContainer" style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; position: relative; z-index: 10;">
+                    </div>
+            </div>
+            
+            <div class="combo-info">
+                <h1 th:text="${combo.name}">Combo Name</h1>
+                <p th:text="${combo.description}">Combo Description goes here.</p>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            <div class="checkout-header">
+                <h2>Complete Your Order</h2>
+                <p>Fill in your details to secure your priority combo.</p>
+            </div>
+
+           <div class="price-summary">
+                <div class="price-row">
+                    <span>Individual Items (Est.)</span>
+                    <span style="text-decoration: line-through;" th:text="'₹' + ${#numbers.formatDecimal(combo.old_price, 1, 2)}">₹0.00</span>
+                </div>
+                <div class="price-row">
+                    <span>Combo Discount</span>
+                    <span style="color: var(--success-base);" th:text="'-₹' + ${#numbers.formatDecimal(combo.old_price - combo.new_price, 1, 2)}">-₹0.00</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total to Pay</span>
+                    <span class="total-val" th:text="'₹' + ${#numbers.formatDecimal(combo.new_price, 1, 2)}">₹0.00</span>
+                </div>
+                
+                <div class="savings-tag" th:text="'You save ₹' + ${#numbers.formatDecimal(combo.old_price - combo.new_price, 1, 2)} + ' by ordering this combo!'">
+                    You save money!
+                </div>
+            </div>
+
+            <form th:action="@{/checkout/combo/process}" method="post">
+                
+                <input type="hidden" name="itemName" th:value="'[COMBO] ' + ${combo.name}">
+                <input type="hidden" name="totalAmount" th:value="${combo.new_price}">
+
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="customerName" placeholder="Enter your full name" required autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label>Where are you sitting?</label>
+                    <select name="specialNotes" required>
+                        <option value="" disabled selected>Select a Table</option>
+                        <option value="Table 1">Table 1</option>
+                        <option value="Table 2">Table 2</option>
+                        <option value="Table 3">Table 3</option>
+                        <option value="Table 4">Table 4</option>
+                        <option value="Takeaway">Takeaway</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Confirm Order</button>
+            </form>
+        </div>
+    </div>
+
+  <script th:inline="javascript">
+        (function() {
+            const rawPath = /*[[${combo.image_url}]]*/ '';
+            const container = document.getElementById('comboImageContainer');
+            
+            if (rawPath) {
+                container.innerHTML = '';
+                const paths = rawPath.split(',');
+
+                // 1. SINGLE IMAGE LOGIC (Fills the box perfectly, no broken UI)
+                if (paths.length === 1) {
+                    const img = document.createElement('img');
+                    img.src = paths[0].startsWith('/') ? paths[0] : '/' + paths[0];
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.position = 'absolute';
+                    img.style.inset = '0';
+                    img.style.borderRadius = '24px';
+                    img.style.zIndex = '1';
+                    
+                    container.style.display = 'block';
+                    container.style.padding = '0'; 
+                    container.appendChild(img);
+                    return; 
+                }
+
+                // 2. MULTIPLE IMAGES: FRAMED GRID LOGIC
+                container.style.display = 'grid';
+                container.style.gap = '10px'; // Tighter, cleaner gaps
+                
+                // 🔥 THE FIX: "Width thoda kam" (80% size) creates a premium dark border around the grid!
+                container.style.width = '40%'; 
+                container.style.height = '40%';
+                container.style.margin = 'auto'; // Perfectly centers the grid
+                container.style.position = 'relative';
+                container.style.zIndex = '10';
+                
+                // Cap at 4 images so the UI NEVER breaks
+                const displayPaths = paths.slice(0, 4); 
+
+                // Dynamic Layout
+                if (displayPaths.length === 2) {
+                    container.style.gridTemplateColumns = '1fr 1fr';
+                    container.style.gridTemplateRows = '1fr';
+                } else {
+                    // For 3 or 4 items, make it a neat 2x2 grid
+                    container.style.gridTemplateColumns = '1fr 1fr';
+                    container.style.gridTemplateRows = '1fr 1fr';
+                }
+
+                displayPaths.forEach((path, index) => {
+                    const img = document.createElement('img');
+                    img.src = path.startsWith('/') ? path : '/' + path;
+                    
+                    // Grid Image Styling
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '12px'; // Smoother inside corners
+                    img.style.border = '2px solid rgba(212, 168, 90, 0.4)'; // Rich gold outline
+                    img.style.boxShadow = '0 8px 20px rgba(0,0,0,0.6)';
+                    img.style.transition = 'transform 0.3s ease';
+
+                    // If exactly 3 items, make the first image take the whole top row (Looks amazing!)
+                    if (displayPaths.length === 3 && index === 0) {
+                        img.style.gridColumn = '1 / span 2';
+                    }
+
+                    // Hover Pop Effect
+                    img.addEventListener('mouseenter', () => {
+                        img.style.transform = 'scale(1.04)';
+                        img.style.zIndex = '20';
+                    });
+                    img.addEventListener('mouseleave', () => {
+                        img.style.transform = 'scale(1)';
+                        img.style.zIndex = '1';
+                    });
+
+                    container.appendChild(img);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

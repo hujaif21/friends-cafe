@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalize Order — Friends Cafe Bar</title>
+    <meta name="description"
+        content="Customize and finalize your coffee order at Friends Cafe Bar. Premium beans, artisan preparation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --cream: #F5EFE6;
+            --warm-white: #FDFAF6;
+            --espresso: #1C0F0A;
+            --brown: #3D1F10;
+            --caramel: #C28A50;
+            --gold: #D4A85A;
+            --muted: #8C7B6E;
+            --border: rgba(194, 138, 80, 0.2);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--warm-white);
+            color: var(--espresso);
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--caramel);
+            border-radius: 4px;
+        }
+
+        /* ========== NAVBAR ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 60px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(28, 15, 10, 0.97);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(212, 168, 90, 0.12);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .nav-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--gold);
+        }
+
+        .nav-cta {
+            background: var(--gold);
+            color: var(--espresso) !important;
+            padding: 9px 24px;
+            border-radius: 2px;
+            font-weight: 600 !important;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: white !important;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            height: 45vh;
+            min-height: 340px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1920&q=90') center/cover no-repeat;
+            transform: scale(1.05);
+            animation: heroZoom 10s ease-out forwards;
+        }
+
+        @keyframes heroZoom {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(18, 8, 3, 0.75) 0%, rgba(28, 15, 10, 0.88) 100%);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 0.9s ease forwards;
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .hero-eyebrow span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .eyebrow-line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.6;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(44px, 6vw, 80px);
+            color: white;
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== MAIN LAYOUT ========== */
+        .order-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: calc(100vh - 72px);
+        }
+
+        /* ========== FORM SECTION ========== */
+        .form-section {
+            padding: 70px 80px 100px;
+            animation: sectionFade 0.5s ease;
+        }
+
+        @keyframes sectionFade {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-label-row::before {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+        .form-label-row span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--caramel);
+        }
+
+        .form-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 300;
+            color: var(--espresso);
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .form-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+        .form-subtitle {
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 48px;
+            max-width: 500px;
+        }
+
+        /* ---- Product Display Card ---- */
+        .product-display-card {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 40px;
+            transition: all 0.4s ease;
+        }
+
+        .product-display-card:hover {
+            box-shadow: 0 8px 40px rgba(194, 138, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .product-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .product-meta {
+            flex: 1;
+        }
+
+        .product-tag {
+            display: inline-block;
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            background: rgba(212, 168, 90, 0.1);
+            padding: 4px 12px;
+            border-radius: 2px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .product-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--espresso);
+            margin-bottom: 4px;
+        }
+
+        .product-base-price {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .product-base-price strong {
+            color: var(--caramel);
+            font-weight: 600;
+        }
+
+        /* ---- Inputs ---- */
+        .field-group {
+            margin-bottom: 32px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--brown);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Jost', sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            color: var(--espresso);
+            background: var(--warm-white);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .field-input::placeholder {
+            color: var(--muted);
+            opacity: 0.6;
+        }
+
+        .field-input:focus {
+            border-color: var(--caramel);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(194, 138, 80, 0.08);
+        }
+
+        .field-input.locked {
+            background: var(--cream);
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        select.field-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C7B6E' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            padding-right: 44px;
+            cursor: pointer;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ---- Quantity ---- */
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .qty-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: var(--cream);
+            color: var(--espresso);
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Jost', sans-serif;
+        }
+
+        .qty-btn:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+        .qty-value {
+            width: 60px;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--espresso);
+            border: none;
+            background: white;
+            outline: none;
+        }
+
+        /* ---- Extras (Checkboxes) ---- */
+        .extras-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .extra-option {
+            position: relative;
+        }
+
+        .extra-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .extra-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--warm-white);
+        }
+
+        .extra-emoji {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .extra-info {
+            flex: 1;
+        }
+
+        .extra-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--espresso);
+            margin-bottom: 2px;
+        }
+
+        .extra-price-tag {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .extra-check {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid var(--border);
+            border-radius: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 12px;
+            color: transparent;
+        }
+
+        .extra-option input:checked+.extra-card {
+            border-color: var(--caramel);
+            background: white;
+            box-shadow: 0 4px 20px rgba(194, 138, 80, 0.1);
+        }
+
+        .extra-option input:checked+.extra-card .extra-check {
+            border-color: var(--caramel);
+            background: var(--caramel);
+            color: white;
+        }
+
+        /* ---- Textarea ---- */
+        textarea.field-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ---- Action Buttons ---- */
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .btn-next {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gold);
+            color: var(--espresso);
+            padding: 16px 36px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid var(--gold);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-next:hover {
+            background: white;
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--muted);
+            padding: 16px 30px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 400;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            border-color: var(--caramel);
+            color: var(--caramel);
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--espresso);
+            color: white;
+            padding: 16px 44px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid var(--espresso);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--brown);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(28, 15, 10, 0.25);
+        }
+
+        /* ========== SIDEBAR (Summary) ========== */
+        .order-sidebar {
+            background: var(--espresso);
+            padding: 60px 40px;
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(212, 168, 90, 0.3);
+        }
+
+        .order-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .sidebar-header {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .sidebar-label::before {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        .sidebar-label span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .sidebar-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 300;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .sidebar-title em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        /* Summary Items */
+        .summary-items {
+            flex: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 28px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-key {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        .summary-val {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            text-align: right;
+            max-width: 180px;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: rgba(212, 168, 90, 0.2);
+            margin: 20px 0;
+        }
+
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .summary-total-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .summary-empty {
+            text-align: center;
+            padding: 60px 0;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .summary-empty-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Sidebar artwork */
+        .sidebar-art {
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-art img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 4px;
+            filter: brightness(0.6);
+        }
+
+        .sidebar-art-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--espresso);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 4px;
+            border-left: 3px solid var(--gold);
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: linear-gradient(180deg, #0D0705 0%, #1a0e08 50%, #0D0705 100%);
+            padding: 0 60px 28px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--caramel) 70%, transparent 100%);
+        }
+
+        .footer-glow {
+            text-align: center;
+            padding: 48px 0 36px;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .footer-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 300;
+            margin-top: 10px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            padding: 24px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+
+        .footer-nav a {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .footer-nav a:hover {
+            color: var(--gold);
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 28px 0 24px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-social a:hover {
+            border-color: var(--gold);
+            background: rgba(212, 168, 90, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-badge {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1100px) {
+            .order-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+                order: -1;
+                padding: 40px;
+            }
+
+            .sidebar-art {
+                display: none;
+            }
+
+            .form-section {
+                padding: 50px 40px 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .form-section {
+                padding: 40px 24px 60px;
+            }
+
+            .order-sidebar {
+                padding: 30px 24px;
+            }
+
+            .extras-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 30px 24px 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-next,
+            .btn-back,
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .product-display-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .product-thumb {
+                width: 100%;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="friends-cafe-home.html" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+             <li><a th:href="@{/combos}">Order Combo</a></li>
+            <li><a th:href="@{/specific}" class="active">Your Order</a></li>
+            <li><a th:href="@{/reservation}" class="nav-cta">Reserve Table</a></li>
+        </ul>
+      <div th:replace="~{common/cart-fragment :: cart-icon}"></div>
+    </nav>
+
+  <div class="order-layout">
+
+    <form class="form-section" th:action="@{/specific/process}" th:object="${s_orders}" method="post" id="orderForm">
+
+        <div class="form-label-row"><span>Finalize</span></div>
+        <h2 class="form-title">Customize<br>Your <em>Selection</em></h2>
+        <p class="form-subtitle">Your choice is locked in — now personalize it. Add your name, adjust quantity, pick
+            your favorite extras, and make it truly yours.</p>
+
+        <div class="product-display-card">
+    <div id="imageContainer" style="display: flex; gap: 10px; align-items: center;">
+        <img id="displayImage" src="" class="product-thumb" alt="Selected Coffee">
+    </div>
+    
+    <div class="product-meta">
+        <span class="product-tag">Selected Item</span>
+        <h3 class="product-name" id="displayTitle">Loading...</h3>
+        <p class="product-base-price">Base Price: <strong id="displayBasePrice">₹0</strong></p>
+    </div>
+</div>
+
+      <input type="hidden" id="realItemName" name="itemName">
+
+        <input type="hidden" id="totalAmount" name="totalAmount" value="0">
+        <input type="hidden" id="hiddenPromoCode" name="promoCode" value="">
+        
+        
+        <div class="field-group">
+            <label class="field-label">Your Name</label>
+            <input type="text" class="field-input" id="customerName" name="customerName" placeholder="Who is this coffee for?" required>
+        </div>
+
+       <div class="field-group">
+            <label class="field-label">Item Selected</label>
+            <input type="text" class="field-input locked" id="visibleItemName" readonly>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Quantity</label>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+                <input type="text" class="qty-value" id="qtyValue" name="quantity" value="1" readonly>
+                <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Choose Size</label>
+            <div class="extras-grid">
+                <label class="extra-option">
+                    <input type="radio" name="size" value="Regular" data-price="0" checked onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">☕</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Regular</div>
+                            <div class="extra-price-tag">Standard</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+                <label class="extra-option">
+                    <input type="radio" name="size" value="Medium" data-price="30" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🍵</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Medium</div>
+                            <div class="extra-price-tag">+₹30</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+                <label class="extra-option">
+                    <input type="radio" name="size" value="Large" data-price="50" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🫗</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Large</div>
+                            <div class="extra-price-tag">+₹50</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Payment Method</label>
+            <div class="extras-grid">
+                <label class="extra-option">
+                    <input type="radio" name="paymentMethod" value="Pay at Counter" checked onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">💵</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Pay at Counter</div>
+                            <div class="extra-price-tag">Cash / Card</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+                <label class="extra-option">
+                    <input type="radio" name="paymentMethod" value="UPI Payment" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">📱</span>
+                        <div class="extra-info">
+                            <div class="extra-name">UPI Payment</div>
+                            <div class="extra-price-tag">GPay / PhonePe</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Add-ons & Extras</label>
+            <div class="extras-grid">
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Extra Espresso Shot" data-price="30" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">⚡</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Extra Espresso Shot</div>
+                            <div class="extra-price-tag">+₹30</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Whipped Cream" data-price="20" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🍦</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Whipped Cream</div>
+                            <div class="extra-price-tag">+₹20</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+                <label class="extra-option">
+                    <input type="checkbox" name="extras" value="Caramel Drizzle" data-price="15" onchange="updateSummary()">
+                    <div class="extra-card">
+                        <span class="extra-emoji">🍯</span>
+                        <div class="extra-info">
+                            <div class="extra-name">Caramel Drizzle</div>
+                            <div class="extra-price-tag">+₹15</div>
+                        </div>
+                        <div class="extra-check">✓</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Special Instructions</label>
+            <textarea class="field-input" id="specialNotes" name="specialNotes"
+                placeholder="Less sugar, extra hot, specific table number…"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <a href="/menu" class="btn-back">← Back to Menu</a>
+            <button type="button" class="btn-submit" onclick="placeOrder()">Confirm & Pay ☕</button>
+        </div>
+
+    </form>
+
+    <div class="order-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-label"><span>Your Order</span></div>
+            <div class="sidebar-title">Order<br><em>Summary</em></div>
+        </div>
+
+        <div class="summary-items" id="summaryContent">
+            <div class="summary-empty">
+                <div class="summary-empty-icon">☕</div>
+                <p>Loading your order<br>details...</p>
+            </div>
+        </div>
+<div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
+            <label style="font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 10px;">Have a Promo Code?</label>
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="promoCode" placeholder="Enter code..." 
+                       style="flex: 1; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 168, 90, 0.3); color: white; border-radius: 4px; font-family: 'Jost', sans-serif; font-size: 14px; outline: none; text-transform: uppercase;">
+                <button type="button" onclick="applyPromo()" style="background: var(--gold); color: var(--espresso); border: none; padding: 0 20px; border-radius: 4px; font-weight: 600; cursor: pointer;">Apply</button>
+            </div>
+            
+            <p id="promoMessage" style="font-size: 12px; margin-top: 8px; font-weight: 500;">
+                <span style="color: rgba(255,255,255,0.5); font-style: italic;">✨ Hint: Use <strong style="color: var(--gold);">FRIENDS20</strong> for 20% off!</span>
+            </p>
+        </div>
+        
+      
+        <div class="sidebar-art">
+            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Friends Cafe">
+            <p class="sidebar-art-text">"Every cup tells a story.<br>What's yours?"</p>
+        </div>
+    </div>
+
+</div>
+    <footer>
+        <div class="footer-glow">
+            <a href="friends-cafe-home.html" class="footer-logo">Friends <em>Cafe</em> Bar</a>
+            <p class="footer-tagline">"Where every cup tells a story of friendship, trust & love"</p>
+        </div>
+        <div class="footer-social">
+            <a href="#" title="Instagram">📷</a>
+            <a href="#" title="Facebook">📘</a>
+            <a href="#" title="WhatsApp">💬</a>
+            <a href="#" title="Twitter">🐦</a>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2026 Friends Cafe Bar. All rights reserved.</p>
+            <div class="footer-badge">☕ Brewed with love in Ahmedabad, India 🇮🇳</div>
+        </div>
+    </footer>
+    <div id="paymentOverlay" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(28, 15, 10, 0.85); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;">
+        
+        <div id="paymentSpinner" style="width: 60px; height: 60px; border: 4px solid rgba(212, 168, 90, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px;"></div>
+        
+        <div id="paymentSuccess" style="display: none; width: 60px; height: 60px; background: #4CAF50; border-radius: 50%; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 24px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: white;">
+            ✓
+        </div>
+
+        <h2 id="paymentTitle" style="font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; margin-bottom: 8px;">Processing Payment</h2>
+        <p id="paymentStatus" style="font-size: 14px; color: rgba(255,255,255,0.6); letter-spacing: 1px; font-weight: 300;">Initiating secure connection...</p>
+        
+        <style>
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        </style>
+    </div>
+<div id="toast" class="toast"></div>
+
+    
+    <script th:inline="javascript">
+    // ========== 1. THE "SMART" DATA CATCHER ==========
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlItem = urlParams.get('item');
+    const urlPrice = urlParams.get('price');
+    const urlImage = urlParams.get('image');
+
+    const item = urlItem || sessionStorage.getItem('orderItem') || /*[[${item}]]*/ 'Classic Espresso';
+    const price = parseFloat(urlPrice || sessionStorage.getItem('orderPrice') || /*[[${price}]]*/ 150.0);
+    const imgUrlString = urlImage || sessionStorage.getItem('orderImage') || /*[[${image}]]*/ 'images/home_int.jfif';
+
+    sessionStorage.setItem('orderItem', item);
+    sessionStorage.setItem('orderPrice', price);
+    sessionStorage.setItem('orderImage', imgUrlString);
+
+    // ========== 2. INJECT DATA INTO HTML ==========
+    document.getElementById('displayTitle').innerText = item;
+    document.getElementById('displayBasePrice').innerText = '₹' + price;
+
+    // Decode the string safely
+    let decodedString = imgUrlString;
+    try { decodedString = decodeURIComponent(imgUrlString); } catch (e) {}
+    const imageList = decodedString.split(',');
+
+    // 🔥 3. LEFT SIDE: LUXURY OVERLAPPING CIRCLES 🔥
+    const container = document.getElementById('imageContainer');
+    container.innerHTML = '';
+    
+    // Limit to 3 circles so the white card doesn't stretch
+    const displayLeft = imageList.slice(0, 3);
+
+    displayLeft.forEach((path, index) => {
+        const cleanPath = path.trim();
+        if (!cleanPath) return; 
+        
+        const newImg = document.createElement('img');
+        newImg.src = cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath;
+        newImg.className = 'product-thumb';
+        
+        if (imageList.length > 1) {
+            // Apply the beautiful overlapping circle style
+            newImg.style.width = '75px';
+            newImg.style.height = '75px';
+            newImg.style.borderRadius = '50%';
+            newImg.style.objectFit = 'cover';
+            newImg.style.marginLeft = index > 0 ? '-30px' : '0'; 
+            newImg.style.border = '3px solid white'; // White border for the cut-out effect
+            newImg.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+            newImg.style.position = 'relative';
+            newImg.style.zIndex = 10 - index;
+        }
+        container.appendChild(newImg);
+    });
+
+    // 🔥 4. RIGHT SIDE (LIVE SUMMARY): DYNAMIC GRID 🔥
+    const sidebarArt = document.querySelector('.sidebar-art');
+    if (sidebarArt && imageList.length > 0) {
+        sidebarArt.innerHTML = ''; // Remove the default cafe image
+        
+        const grid = document.createElement('div');
+        grid.style.display = 'grid';
+        grid.style.gap = '8px';
+        grid.style.width = '100%';
+        grid.style.aspectRatio = '16/9';
+        grid.style.marginBottom = '16px';
+        
+        // Limit to 4 images for a perfect grid
+        const displaySidebar = imageList.slice(0, 4); 
+        
+        // Smart Layout Logic
+        if (displaySidebar.length === 1) {
+            grid.style.gridTemplateColumns = '1fr';
+        } else if (displaySidebar.length === 2) {
+            grid.style.gridTemplateColumns = '1fr 1fr';
+        } else {
+            grid.style.gridTemplateColumns = '1fr 1fr';
+            grid.style.gridTemplateRows = '1fr 1fr';
+        }
+        
+        displaySidebar.forEach((path, index) => {
+            const cleanPath = path.trim();
+            if (!cleanPath) return;
+
+            const img = document.createElement('img');
+            img.src = cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            img.style.border = '1px solid rgba(255,255,255,0.1)';
+
+            // If exactly 3 items, make the first one span the top beautifully
+            if (displaySidebar.length === 3 && index === 0) {
+                img.style.gridColumn = '1 / span 2';
+            }
+            grid.appendChild(img);
+        });
+        
+        sidebarArt.appendChild(grid);
+        
+        // Add a personalized text beneath the grid!
+        const text = document.createElement('p');
+        text.className = 'sidebar-art-text';
+        text.innerHTML = '"Every cup tells a story.<br>Here is yours."';
+        sidebarArt.appendChild(text);
+    }
+
+    // Fill form inputs for the database
+    document.getElementById('visibleItemName').value = item;
+    document.getElementById('realItemName').value = item;
+    
+    
+    
+        // ========== 3. QUANTITY CONTROL ==========
+        function changeQty(delta) {
+            const el = document.getElementById('qtyValue');
+            let val = parseInt(el.value) + delta;
+            if (val < 1) val = 1;
+            if (val > 10) val = 10;
+            el.value = val;
+            updateSummary();
+        }
+        
+        // ========== 4. LIVE SUMMARY ==========
+       // ========== 4. LIVE SUMMARY (WITH DISCOUNT LOGIC) ==========
+       // Global variable to track if a promo is successfully applied
+        window.appliedPromo = null;
+
+        // ========== NEW: DATABASE API PROMO CHECK ==========
+        async function applyPromo() {
+            const name = document.getElementById('customerName').value.trim();
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const msgEl = document.getElementById('promoMessage');
+
+            if (!name) {
+                msgEl.innerHTML = '<span style="color: #ff6b6b;">Please enter your name first!</span>';
+                return;
+            }
+            if (code !== 'FRIENDS20') {
+                msgEl.innerHTML = '<span style="color: #ff6b6b;">Invalid promo code.</span>';
+                return;
+            }
+
+            msgEl.innerHTML = '<span style="color: var(--gold);">Checking database...</span>';
+
+            try {
+                // Call the Spring Boot API!
+                const response = await fetch(`/api/check-promo?name=${name}&code=${code}`);
+                const alreadyUsed = await response.json();
+
+                if (alreadyUsed) {
+                    msgEl.innerHTML = `<span style="color: #ff6b6b;">Sorry ${name}, you already redeemed this code!</span>`;
+                    window.appliedPromo = null;
+                } else {
+                    msgEl.innerHTML = '<span style="color: #4CAF50;">✓ Code Applied! 20% Off!</span>';
+                    window.appliedPromo = code;
+                    document.getElementById('hiddenPromoCode').value = code; // Save for database
+                }
+                updateSummary();
+            } catch (e) {
+                msgEl.innerHTML = '<span style="color: #ff6b6b;">Error checking code. Try again.</span>';
+            }
+        }
+
+        // ========== 4. LIVE SUMMARY ==========
+        function updateSummary() {
+            const name = document.getElementById('customerName').value.trim();
+            const qty = parseInt(document.getElementById('qtyValue').value);
+            const sizeEl = document.querySelector('input[name="size"]:checked');
+            const paymentEl = document.querySelector('input[name="paymentMethod"]:checked');
+            
+            const sizeUpgrade = sizeEl ? parseInt(sizeEl.dataset.price) : 0;
+            const sizeName = sizeEl ? sizeEl.value : 'Regular';
+            const paymentName = paymentEl ? paymentEl.value : 'Pay at Counter';
+
+            const container = document.getElementById('summaryContent');
+            const extras = document.querySelectorAll('input[name="extras"]:checked');
+
+            let extrasHTML = '';
+            let extrasTotal = 0;
+            extras.forEach(e => {
+                const eName = e.value;
+                const ePrice = parseInt(e.dataset.price);
+                extrasTotal += ePrice;
+                extrasHTML += `<div class="summary-row"><span class="summary-key">+ ${eName}</span><span class="summary-val">₹${ePrice}</span></div>`;
+            });
+
+            // 1. Calculate normal Subtotal
+            const unitPrice = price + sizeUpgrade + extrasTotal;
+            const subtotal = unitPrice * qty;
+
+            // 2. DISCOUNT LOGIC (Only if API approved it!)
+            let discountAmount = 0;
+            let discountHTML = '';
+
+            if (window.appliedPromo === 'FRIENDS20') {
+                discountAmount = subtotal * 0.20;
+                discountHTML = `
+                    <div class="summary-row" style="color: #4CAF50;">
+                        <span class="summary-key" style="color: #4CAF50;">Discount (20%)</span>
+                        <span class="summary-val">-₹${discountAmount.toFixed(2)}</span>
+                    </div>`;
+            }
+
+            // 3. Final Total
+            const finalTotal = subtotal - discountAmount;
+
+            container.innerHTML = `
+                ${name ? `<div class="summary-row"><span class="summary-key">Customer</span><span class="summary-val">${name}</span></div>` : ''}
+                <div class="summary-row"><span class="summary-key">Item</span><span class="summary-val">${item}</span></div>
+                <div class="summary-row"><span class="summary-key">Base Price</span><span class="summary-val">₹${price}</span></div>
+                <div class="summary-row"><span class="summary-key">Size</span><span class="summary-val">${sizeName}${sizeUpgrade > 0 ? ' (+₹' + sizeUpgrade + ')' : ''}</span></div>
+                ${extrasHTML}
+                <div class="summary-row"><span class="summary-key">Quantity</span><span class="summary-val">×${qty}</span></div>
+                <div class="summary-row"><span class="summary-key">Payment</span><span class="summary-val">${paymentName}</span></div>
+                <div class="summary-divider"></div>
+                ${discountAmount > 0 ? `<div class="summary-row"><span class="summary-key">Subtotal</span><span class="summary-val">₹${subtotal}</span></div>` : ''}
+                ${discountHTML}
+                <div class="summary-total-row" style="${discountAmount > 0 ? 'margin-top: 10px;' : ''}">
+                    <span class="summary-total-label">Total</span>
+                    <span class="summary-total-value">₹${Math.round(finalTotal)}</span>
+                </div>
+            `;
+
+            document.getElementById('totalAmount').value = Math.round(finalTotal);
+        }
+
+     // ========== 5. HOLLYWOOD PAYMENT SIMULATOR ==========
+        function placeOrder() {
+            const name = document.getElementById('customerName').value.trim();
+
+            if (!name) {
+                showToast('Please enter your name to confirm the order.');
+                return;
+            }
+
+            // 1. Ensure extras are submitted even if none are checked
+            const extras = document.querySelectorAll('input[name="extras"]:checked');
+            if (extras.length === 0) {
+                const hiddenExtra = document.createElement('input');
+                hiddenExtra.type = 'hidden';
+                hiddenExtra.name = 'extras';
+                hiddenExtra.value = 'None';
+                document.getElementById('orderForm').appendChild(hiddenExtra);
+            }
+
+            // 2. Trigger the Payment UI!
+            const overlay = document.getElementById('paymentOverlay');
+            const statusText = document.getElementById('paymentStatus');
+            const spinner = document.getElementById('paymentSpinner');
+            const checkmark = document.getElementById('paymentSuccess');
+            const title = document.getElementById('paymentTitle');
+            
+            overlay.style.display = 'flex'; // Darken the screen and show loader
+
+            // 3. The Sequence (Creates the tension of a real bank transaction)
+            setTimeout(() => {
+                statusText.innerText = "Verifying details with bank server...";
+            }, 1000);
+
+            setTimeout(() => {
+                statusText.innerText = "Securing transaction...";
+            }, 2000);
+
+            setTimeout(() => {
+                // SUCCESS STATE!
+                spinner.style.display = 'none';
+                checkmark.style.display = 'flex';
+                title.innerText = "Payment Successful";
+                title.style.color = "#4CAF50";
+                statusText.innerText = "Generating your digital receipt...";
+                
+                // 4. Actually submit the data to Spring Boot after the animation finishes
+                setTimeout(() => {
+                    document.getElementById('orderForm').submit();
+                }, 1200);
+
+            }, 3200); // 3.2 seconds total "processing" time
+        }
+        // ========== 6. TOAST ==========
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 3000);
+        }
+     // Global variable to track if a promo is successfully applied
+        window.appliedPromo = null;
+
+        // ========== NEW: DATABASE API PROMO CHECK ==========
+      // ========== BULLETPROOF DATABASE API PROMO CHECK ==========
+        async function applyPromo() {
+            const nameEl = document.getElementById('customerName');
+            const codeEl = document.getElementById('promoCode');
+            const msgEl = document.getElementById('promoMessage');
+
+            // 1. Get the exact text and clean it up safely
+            const name = nameEl ? nameEl.value.trim() : '';
+            const code = codeEl ? codeEl.value.trim().toUpperCase() : '';
+
+            // 2. Safety Checks
+            if (!name) {
+                msgEl.innerHTML = '<span style="color: #ff6b6b;">Please enter your name first!</span>';
+                return;
+            }
+            if (code !== 'FRIENDS20') {
+                msgEl.innerHTML = '<span style="color: #ff6b6b;">Invalid promo code.</span>';
+                return;
+            }
+
+            msgEl.innerHTML = '<span style="color: var(--gold);">Checking database...</span>';
+
+            try {
+                // 3. Call the Spring Boot API securely
+                const response = await fetch('/api/check-promo?name=' + encodeURIComponent(name) + '&code=' + encodeURIComponent(code));
+                
+                // 4. Check if the server actually responded properly
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+                
+                // 5. Read the Yes/No answer from the database
+                const alreadyUsed = await response.json();
+
+                if (alreadyUsed === true) {
+                    // They ARE in the database with this code
+                    msgEl.innerHTML = `<span style="color: #ff6b6b;">Sorry ${name}, you already redeemed this code!</span>`;
+                    window.appliedPromo = null;
+                    document.getElementById('hiddenPromoCode').value = '';
+                } else {
+                    // They are a NEW user, let them have it!
+                    msgEl.innerHTML = '<span style="color: #4CAF50;">✓ Code Applied! 20% Off!</span>';
+                    window.appliedPromo = code;
+                    document.getElementById('hiddenPromoCode').value = code; // Save for database
+                }
+                
+                // Update the math on the receipt
+                updateSummary();
+                
+            } catch (e) {
+                console.error("Promo API Error:", e);
+                // If the database crashes, BE GENEROUS and give the user the discount anyway!
+                msgEl.innerHTML = '<span style="color: #4CAF50;">✓ Code Applied! 20% Off! (Fallback)</span>';
+                window.appliedPromo = code;
+                document.getElementById('hiddenPromoCode').value = code;
+                updateSummary();
+            }
+        }
+        // ========== 7. INIT ==========
+        updateSummary();
+        document.getElementById('customerName').addEventListener('input', updateSummary);
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combos & Specials — Friends Cafe Bar</title>
+    <meta name="description" content="Premium curated combos and today's specials at Friends Cafe Bar.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        /* ==========================================================================
+           01. PROFESSIONAL DESIGN TOKENS
+           Clean, strictly controlled variables for a stable luxury dark theme.
+           ========================================================================== */
+        :root {
+            /* Solid Dark Theme Palette */
+            --bg-body: #050505;
+            --bg-card: #121212;
+            --bg-card-hover: #1a1a1a;
+            --bg-nav: rgba(5, 5, 5, 0.95);
+            
+            /* Typography Colors */
+            --text-main: #FFFFFF;
+            --text-muted: #A0A0A0;
+            --text-faint: #666666;
+            
+            /* Brand Accents */
+            --brand-gold: #D4A85A;
+            --brand-gold-light: #F5C26B;
+            --brand-gold-dim: rgba(212, 168, 90, 0.15);
+            
+            /* Status Colors */
+            --status-popular: #D4A85A;
+            --status-value: #48BB78;
+            --status-new: #4299E1;
+            
+            /* Borders & Shadows */
+            --border-subtle: #222222;
+            --border-gold: rgba(212, 168, 90, 0.3);
+            --shadow-standard: 0 10px 30px rgba(0, 0, 0, 0.5);
+            
+            /* Transitions */
+            --trans-fast: 0.2s ease;
+            --trans-med: 0.4s ease;
+        }
+
+        /* ==========================================================================
+           02. STRICT RESET & BASE
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img { max-width: 100%; display: block; }
+        a { text-decoration: none; color: inherit; }
+        button { border: none; background: none; font-family: inherit; cursor: pointer; outline: none; }
+        
+        h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', serif; font-weight: 400; line-height: 1.2; margin: 0; }
+        em { font-style: italic; color: var(--brand-gold); }
+
+        .eyebrow {
+            font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--brand-gold); font-weight: 600; display: inline-block;
+            margin-bottom: 15px; border-bottom: 1px solid var(--brand-gold); padding-bottom: 5px;
+        }
+
+        /* ==========================================================================
+           03. CLEAN NAVIGATION
+           ========================================================================== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            height: 80px; padding: 0 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-nav); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: var(--trans-med);
+        }
+
+        .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase; }
+        
+        .nav-links { display: flex; gap: 40px; list-style: none; align-items: center; margin: 0; }
+        .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); transition: var(--trans-fast); }
+        .nav-links a:hover, .nav-links a.active { color: var(--brand-gold); }
+        
+        .nav-cta {
+            border: 1px solid var(--brand-gold); color: var(--brand-gold) !important;
+            padding: 10px 24px; border-radius: 4px; transition: var(--trans-fast);
+        }
+        .nav-cta:hover { background: var(--brand-gold); color: var(--bg-body) !important; }
+
+        /* ==========================================================================
+           04. HERO SECTION
+           ========================================================================== */
+        .hero-section {
+            position: relative; width: 100%; height: 60vh; min-height: 400px;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 80px; /* Offset for fixed nav */
+            overflow: hidden; background: var(--bg-card);
+        }
+
+        .hero-bg {
+            position: absolute; inset: 0; z-index: 1;
+        }
+        .hero-bg img {
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
+        }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(0deg, var(--bg-body) 0%, transparent 100%);
+        }
+
+        .hero-content {
+            position: relative; z-index: 2; text-align: center; padding: 0 20px;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .hero-title { font-size: clamp(40px, 6vw, 80px); margin-bottom: 15px; }
+        .hero-subtitle { font-size: 14px; color: var(--text-muted); letter-spacing: 4px; text-transform: uppercase; }
+
+        /* ==========================================================================
+           05. TODAY'S SPECIAL (STABLE SIDE-BY-SIDE LAYOUT)
+           ========================================================================== */
+        .special-section {
+            padding: 80px 5%;
+            background: var(--bg-body);
+            position: relative; z-index: 5;
+        }
+
+        .special-container {
+            max-width: 1200px; margin: 0 auto;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 12px; overflow: hidden;
+            display: flex; align-items: stretch;
+            box-shadow: var(--shadow-standard);
+        }
+
+        .special-image {
+            flex: 0 0 50%;
+            position: relative;
+        }
+        .special-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            min-height: 400px; /* Prevents collapsing */
+        }
+
+        .special-content {
+            flex: 0 0 50%;
+            padding: 60px 50px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .special-badge {
+            display: inline-block; background: var(--brand-gold-dim);
+            color: var(--brand-gold); padding: 6px 16px; border-radius: 4px;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            font-weight: 600; margin-bottom: 20px; border: 1px solid var(--border-gold);
+            width: fit-content;
+        }
+
+        .special-title { font-size: 48px; margin-bottom: 15px; color: var(--text-main); line-height: 1; }
+        .special-desc { font-size: 16px; color: var(--text-muted); margin-bottom: 40px; }
+
+        /* Stable Countdown Grid */
+        .countdown-grid {
+            display: flex; flex-direction: row; flex-wrap: nowrap; gap: 20px; align-items: center;
+            margin-bottom: 40px;
+        }
+        .cd-block {
+            display: flex; flex-direction: column; align-items: center;
+            background: var(--bg-body); border: 1px solid var(--border-subtle);
+            padding: 15px; border-radius: 8px; min-width: 80px;
+        }
+        .cd-number { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--text-main); line-height: 1; }
+        .cd-label { font-size: 10px; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        .cd-colon { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--text-faint); margin-top: -20px;}
+
+        .special-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 30px; border-top: 1px solid var(--border-subtle);
+        }
+
+        .special-pricing { display: flex; flex-direction: column; }
+        .sp-old { font-size: 14px; text-decoration: line-through; color: var(--text-faint); }
+        .sp-new { font-family: 'Cormorant Garamond', serif; font-size: 42px; color: var(--brand-gold); line-height: 1; }
+
+        .btn-solid {
+            background: var(--brand-gold); color: var(--bg-body);
+            padding: 16px 32px; font-size: 12px; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; border-radius: 4px;
+            transition: var(--trans-fast); border: 1px solid var(--brand-gold);
+        }
+        .btn-solid:hover { background: transparent; color: var(--brand-gold); }
+
+        /* ==========================================================================
+           06. CATALOG SECTION (STABLE GRID)
+           ========================================================================== */
+        .catalog-section { padding: 80px 5% 120px; max-width: 1400px; margin: 0 auto; }
+        
+        .catalog-header { text-align: center; margin-bottom: 60px; }
+        .catalog-title { font-size: 56px; margin-bottom: 15px; }
+        .catalog-subtitle { font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+        /* Professional Tabs */
+        .filter-tabs {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 50px;
+        }
+        .filter-tab {
+            padding: 10px 24px; background: transparent; border: 1px solid var(--border-subtle);
+            color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+            border-radius: 4px; transition: var(--trans-fast);
+        }
+        .filter-tab:hover { border-color: var(--text-faint); color: var(--text-main); }
+        .filter-tab.active { background: var(--bg-card); border-color: var(--brand-gold); color: var(--brand-gold); }
+
+        /* The Reliable Grid */
+        .combo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+        }
+
+        .combo-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;
+            transition: var(--trans-fast);
+        }
+        .combo-card:hover { border-color: var(--border-gold); transform: translateY(-5px); box-shadow: var(--shadow-standard); }
+        .combo-card.hidden { display: none; }
+
+        .card-image { position: relative; height: 260px; overflow: hidden; border-bottom: 1px solid var(--border-subtle); }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .combo-card:hover .card-image img { transform: scale(1.05); }
+
+        .card-tag {
+            position: absolute; top: 15px; left: 15px; padding: 4px 12px; border-radius: 4px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+        }
+        .tag-popular { background: var(--status-popular); color: #000; }
+        .tag-value { background: var(--status-value); color: #FFF; }
+        .tag-new { background: var(--status-new); color: #FFF; }
+        .tag-default { background: rgba(0,0,0,0.8); color: #FFF; border: 1px solid #333; }
+
+        .card-body { padding: 30px; display: flex; flex-direction: column; flex: 1; }
+        .card-name { font-size: 28px; margin-bottom: 10px; color: var(--text-main); }
+        .card-description { font-size: 15px; color: var(--text-muted); margin-bottom: 25px; flex: 1; }
+
+        .card-action {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border-subtle); padding-top: 20px;
+        }
+        .card-price-group { display: flex; flex-direction: column; }
+        .cp-old { font-size: 12px; color: var(--text-faint); text-decoration: line-through; }
+        .cp-new { font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--brand-gold); line-height: 1; }
+
+        .btn-outline {
+            padding: 10px 20px; border: 1px solid var(--border-subtle); color: var(--text-main);
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px;
+            transition: var(--trans-fast);
+        }
+        .combo-card:hover .btn-outline { border-color: var(--brand-gold); color: var(--brand-gold); }
+        .btn-outline:hover { background: var(--brand-gold); color: var(--bg-body); }
+
+        /* ==========================================================================
+           07. FOOTER
+           ========================================================================== */
+        footer {
+            background: var(--bg-card); padding: 80px 5% 40px; text-align: center;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 36px; display: block; margin-bottom: 30px; }
+        .footer-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; flex-wrap: wrap; }
+        .footer-nav a { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; transition: var(--trans-fast); }
+        .footer-nav a:hover { color: var(--brand-gold); }
+        .footer-legal { font-size: 12px; color: var(--text-faint); border-top: 1px solid var(--border-subtle); padding-top: 30px; }
+
+        /* ==========================================================================
+           08. TOAST NOTIFICATION
+           ========================================================================== */
+        #toast {
+            position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+            background: var(--bg-card); border: 1px solid var(--brand-gold);
+            padding: 20px 25px; border-radius: 8px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: translateY(100px); opacity: 0; transition: var(--trans-med);
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+        .toast-spinner { width: 20px; height: 20px; border: 2px solid var(--border-subtle); border-top-color: var(--brand-gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        .toast-text { font-size: 14px; color: var(--text-main); font-weight: 500; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           09. RESPONSIVE / MOBILE STABILITY
+           ========================================================================== */
+        @media (max-width: 992px) {
+            .special-container { flex-direction: column; }
+            .special-image { flex: none; width: 100%; height: 350px; }
+            .special-image img { min-height: auto; }
+            .special-content { flex: none; width: 100%; padding: 40px; text-align: center; align-items: center;}
+            .special-desc { text-align: center; }
+            .countdown-grid { justify-content: center; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-links { display: none; }
+            .hero-title { font-size: 48px; }
+            .special-section { padding: 40px 20px; }
+            .special-content { padding: 30px 20px; }
+            .countdown-grid { gap: 10px; }
+            .cd-block { min-width: 60px; padding: 10px; }
+            .cd-number { font-size: 28px; }
+            .cd-colon { font-size: 28px; margin-top: -15px; }
+            .special-footer { flex-direction: column; gap: 20px; }
+            .btn-solid { width: 100%; }
+            .catalog-section { padding: 60px 20px; }
+            .combo-grid { grid-template-columns: 1fr; }
+            #toast { left: 20px; right: 20px; bottom: 20px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <a th:href="@{/home}" class="nav-logo">Friends <em>Cafe</em></a>
+        
+        <div style="display: flex; align-items: center;">
+            <ul class="nav-links">
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/menu}">Menu</a></li>
+                <li><a th:href="@{/combos}" class="active">Combos</a></li>
+                <li><a th:href="@{/reservation}" class="nav-cta" style="margin-right: 20px;">Reserve Table</a></li>
+            </ul>
+            <div th:replace="~{common/cart-fragment :: cart-icon}"></div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="hero-bg">
+            <img th:src="@{/images/home_int.jfif}" alt="Friends Cafe Interior" loading="eager">
+        </div>
+        <div class="hero-content">
+            <span class="eyebrow">Exclusive Pairings</span>
+            <h1 class="hero-title">Combos & <em>Specials</em></h1>
+            <p class="hero-subtitle">Elevate Your Cafe Experience</p>
+        </div>
+    </div>
+
+    <section class="special-section" id="todays-special" th:if="${todaysSpecial != null}">
+        <div class="special-container">
+            
+            <div class="special-image">
+                <img th:src="@{'/images/' + ${todaysSpecial.image_url}}" alt="Special Combo">
+            </div>
+            
+            <div class="special-content">
+                <div class="special-badge">🔥 Today's Highlight</div>
+                
+                <h2 class="special-title" id="dynamic-day-title">Today's <br><em>Special</em></h2>
+                <p class="special-desc" th:text="${todaysSpecial.description}"></p>
+
+                <div class="countdown-grid">
+                    <div class="cd-block"><span class="cd-number" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
+                    <span class="cd-colon">:</span>
+                    <div class="cd-block"><span class="cd-number" id="cd-mins">00</span><span class="cd-label">Mins</span></div>
+                    <span class="cd-colon">:</span>
+                    <div class="cd-block"><span class="cd-number" id="cd-secs">00</span><span class="cd-label">Secs</span></div>
+                </div>
+
+                <div class="special-footer">
+                    <div class="special-pricing">
+                        <span class="sp-old" th:text="'₹' + ${todaysSpecial.old_price}">₹0</span>
+                        <span class="sp-new" th:text="'₹' + ${todaysSpecial.new_price}">₹0</span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center;" th:if="${session.loggedUser != null}">
+                        <form th:action="@{/cart/add-combo/{id}(id=${todaysSpecial.combo_id})}" method="post" style="margin: 0;">
+                            <button type="submit" class="btn-outline" style="padding: 16px 20px; border-color: var(--brand-gold); color: var(--brand-gold);" title="Add to Cart">
+                                <i class="bi bi-cart-plus" style="font-size: 1.2rem;"></i>
+                            </button>
+                        </form>
+                        
+                        <button class="btn-solid" th:onclick="'orderCombo(' + ${todaysSpecial.combo_id} + ')'">
+                            Claim Offer
+                        </button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;" th:if="${session.loggedUser == null}">
+                        <a th:href="@{/}" class="btn-outline" style="padding: 16px 20px; 
+                        border-color: var(--brand-gold); color: var(--brand-gold); display: flex; align-items: center;"
+                         title="SignUp to Add to Cart">
+                            <i class="bi bi-cart-plus" style="font-size: 1.2rem;"></i>
+                        </a>
+                        
+                        <a th:href="@{/}" class="btn-solid" style="text-decoration: none; text-align: center; display: inline-block;">
+                            Sign Up to Claim
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog-section" id="all-combos">
+        <div class="catalog-header">
+            <span class="eyebrow">The Collection</span>
+            <h2 class="catalog-title">Pair & <em>Save</em></h2>
+            <p class="catalog-subtitle">Browse our full menu of curated combos. Crafted by our head barista for the ultimate sensory balance.</p>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Catalog</button>
+            <button class="filter-tab" data-filter="popular">Bestsellers</button>
+            <button class="filter-tab" data-filter="value">Best Value</button>
+            <button class="filter-tab" data-filter="new">New Pairings</button>
+        </div>
+
+        <div class="combo-grid">
+            
+            <div class="combo-card" th:each="combo : ${allCombos}" th:attr="data-category=${combo.category}">
+                
+                <span class="card-tag tag-default" th:if="${combo.tag != null and combo.tag != ''}" 
+                      th:text="${combo.tag}"
+                      th:classappend="${combo.category == 'popular' ? 'tag-popular' : (combo.category == 'value' ? 'tag-value' : (combo.category == 'new' ? 'tag-new' : ''))}">
+                </span>
+                
+                <div class="card-image">
+                    <img th:src="@{'/images/' + ${combo.image_url}}" alt="Combo Image" loading="lazy">
+                </div>
+                
+                <div class="card-body">
+                    <h3 class="card-name" th:text="${combo.name}">Combo Name</h3>
+                    <p class="card-description" th:text="${combo.description}">Description</p>
+                    
+                    <div class="card-action">
+                        <div class="card-price-group">
+                            <span class="cp-old" th:text="'₹' + ${combo.old_price}">₹0</span>
+                            <span class="cp-new" th:text="'₹' + ${combo.new_price}">₹0</span>
+                        </div>
+                        
+                       <div style="display: flex; gap: 8px;" th:if="${session.loggedUser != null}">
+                            <form th:action="@{/cart/add-combo/{id}(id=${combo.combo_id})}" method="post" style="margin: 0;">
+                                <button type="submit" class="btn-outline" style="padding: 10px 15px;" title="Add to Cart">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </form>
+
+                            <button class="btn-outline" th:onclick="'orderCombo(' + ${combo.combo_id} + ')'">Order Now</button>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;" th:if="${session.loggedUser == null}">
+                            <a th:href="@{/}" class="btn-outline" style="padding: 10px 15px; 
+                            display: inline-flex; align-items: center;" title="Sign Up to Add to Cart">
+                                <i class="bi bi-cart-plus"></i>
+                            </a>
+
+                            <a th:href="@{/}" class="btn-outline" style="display: inline-flex;
+                             align-items: center; text-decoration: none;"> Sign Up for Order </a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <a th:href="@{/home}" class="footer-logo">Friends <em>Cafe</em></a>
+        <div class="footer-nav">
+            <a th:href="@{/home}">Home</a>
+            <a th:href="@{/menu}">Menu</a>
+            <a th:href="@{/combos}">Combos</a>
+            <a th:href="@{/reservation}">Reserve Table</a>
+        </div>
+        <p class="footer-legal">© 2026 Friends Cafe Bar. All rights reserved.</p>
+    </footer>
+
+    <div id="toast">
+        <div class="toast-spinner"></div>
+        <div class="toast-text">Redirecting securely to checkout...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Basic Navbar Scroll ---
+            const nav = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) nav.style.background = 'var(--bg-card)';
+                else nav.style.background = 'var(--bg-nav)';
+            });
+
+            // --- 2. Reliable Countdown Timer ---
+            function updateCountdown() {
+                const now = new Date(); 
+                const midnight = new Date(); 
+                midnight.setHours(24, 0, 0, 0);
+                const diff = midnight - now;
+                
+                const hElement = document.getElementById('cd-hours');
+                if(hElement) {
+                    hElement.textContent = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                    document.getElementById('cd-mins').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                    document.getElementById('cd-secs').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                }
+            }
+            setInterval(updateCountdown, 1000); 
+            updateCountdown();
+
+            // --- 3. Dynamic Day Text ---
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayTitleElement = document.getElementById('dynamic-day-title');
+            if (dayTitleElement) {
+                dayTitleElement.innerHTML = `${days[new Date().getDay()]}'s <br><em>Special</em>`;
+            }
+
+            // --- 4. Stable Grid Filtering ---
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            const comboCards = document.querySelectorAll('.combo-card');
+            
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active state on buttons
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const filter = tab.dataset.filter;
+                    
+                    // Filter logic
+                    comboCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.style.display = 'flex'; // Reset display to flex to fit grid
+                        } else { 
+                            card.style.display = 'none'; 
+                        }
+                    });
+                });
+            });
+
+        });
+
+        // --- 5. Checkout Router ---
+        function orderCombo(comboId) {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            document.body.style.cursor = 'wait';
+            
+            setTimeout(() => {
+                window.location.href = `/checkout/combo?id=${comboId}`;
+            }, 1000); 
+        }
+    </script>
+</body>
+</html>

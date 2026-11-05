@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Friendship Wall — Friends Cafe Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           ULTRA-PREMIUM ADMIN MAIN CONTENT - FRIENDS CAFE
+           Theme: Obsidian Espresso & Liquid Gold
+           ========================================================================== */
+           
+        :root {
+            --sidebar-width: 280px;
+
+            /* Deep Obsidian/Espresso Backgrounds */
+            --bg-body: #050302;         
+            --bg-card: #0A0705;         
+            --bg-table-header: rgba(255, 255, 255, 0.02);
+            --bg-row-hover: rgba(229, 193, 88, 0.04);
+            
+            /* Typography */
+            --text-primary: #FFFFFF;
+            --text-muted: #A39185;
+            --text-gold: #E5C158;
+            
+            /* Borders & Accents */
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(229, 193, 88, 0.2);
+            
+            /* Status Colors */
+            --status-pending-bg: rgba(229, 193, 88, 0.15);
+            --status-pending-text: #E5C158;
+            --status-confirmed-bg: rgba(72, 187, 120, 0.15);
+            --status-confirmed-text: #48BB78;
+            --status-cancelled-bg: rgba(229, 62, 62, 0.15);
+            --status-cancelled-text: #E53E3E;
+            
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            
+            /* Subtle texture overlay */
+            background-image: radial-gradient(circle at 50% 0%, rgba(229, 193, 88, 0.03) 0%, transparent 70%),
+                              url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+        }
+
+        /* ===== MAIN CONTENT LAYOUT ===== */
+        .main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 30px;
+            width: calc(100% - var(--sidebar-width));
+            display: flex;
+            flex-direction: column;
+            max-width: 100%; 
+            overflow-x: hidden; 
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-faint);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+        
+        .header h1 em {
+            color: var(--text-gold);
+            font-style: italic;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ===== TABLE CARD (Glassmorphism) ===== */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-faint);
+            position: relative;
+            width: 100%;
+            overflow-x: auto; 
+        }
+        
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-glow), transparent); opacity: 0.5;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto; 
+        }
+
+        th {
+            background: var(--bg-table-header);
+            color: var(--text-muted);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-faint);
+            white-space: nowrap; 
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 13px;
+            color: var(--text-primary);
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        tr:hover td { background: var(--bg-row-hover); }
+        tr:last-child td { border-bottom: none; }
+
+        /* Typography inside Table */
+        .res-id { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: 1px; }
+        .primary-text { font-weight: 500; color: var(--text-primary); margin-bottom: 4px; display: block; }
+        .sub-text { color: var(--text-muted); font-size: 11px; letter-spacing: 0.5px; }
+        
+        .truncate {
+            display: block;
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .info-tag {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-muted);
+            border: 1px solid var(--border-faint);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-cell { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-edit { 
+            background: var(--text-gold); color: #000; 
+            box-shadow: 0 4px 10px rgba(229, 193, 88, 0.15);
+        }
+        .btn-edit:hover { 
+            background: #F4D37A; transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(229, 193, 88, 0.3);
+        }
+        
+        .btn-delete { 
+            background: transparent; color: #E53E3E; 
+            border: 1px solid rgba(229, 62, 62, 0.3); 
+        }
+        .btn-delete:hover { 
+            background: rgba(229, 62, 62, 0.1); border-color: #E53E3E;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) { 
+            .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px 20px;} 
+        }
+        @media (max-width: 768px) { 
+            body { flex-direction: column; } 
+            .main { margin-left: 0; width: 100%; padding: 20px 15px; } 
+            .header h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/admin-sidebar :: sidebar"></div>
+
+<div class="main">
+
+    <div class="header">
+        <div>
+            <h1>Friendship <em>Wall</em></h1>
+            <p>Manage Customer Notes & Reviews</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+              <tr>
+                <th>ID</th> 
+                <th>Sender Name</th>
+                <th>Kind Word / Message</th>
+                <th>Rating</th>
+                <th>Theme Color</th>
+                <th style="text-align: right;">Manage</th>
+              </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="n, iterStat : ${friendsData}">
+                    
+                    <td class="res-id" th:text="'NOTE-' + ${n.id}"></td> <td>
+                        <span class="primary-text" th:text="${n.senderName}"></span>
+                    </td>
+                    
+                    <td>
+                        <span class="truncate" th:text="${n.message}" th:title="${n.message}"></span>
+                    </td>
+                    
+                    <td>
+                        <span style="color: var(--text-gold); font-size: 16px; text-shadow: 0 0 8px rgba(229, 193, 88, 0.3);" 
+                              th:each="i : ${#numbers.sequence(1, n.rating)}">★</span>
+                        
+                        <span style="color: rgba(255,255,255,0.15); font-size: 16px;" 
+                              th:if="${n.rating < 5}" 
+                              th:each="i : ${#numbers.sequence(n.rating + 1, 5)}">★</span>
+                    </td>
+                    
+                    <td>
+                        <span class="info-tag" th:style="'border-left: 4px solid ' + ${n.noteColor}" th:text="${n.noteColor}"></span>
+                    </td>
+
+                    <td class="action-cell">
+                        <a th:href="@{'/admin/edit_friend/' + ${n.id}}" class="btn-edit" title="Edit Note">✏️ Edit</a>
+                        <a th:href="@{'/admin/delete_friend/' + ${n.id}}" onclick="return confirm('Are you sure you want to delete this note?')" class="btn-delete" title="Delete Note">🗑️ Del</a>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

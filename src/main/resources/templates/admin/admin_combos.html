@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Combo Management — Friends Cafe Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== ULTRA-PREMIUM ADMIN THEME ===== */
+        :root {
+            --sidebar-width: 280px;
+            --bg-body: #050302;         
+            --bg-card: #0A0705;         
+            --bg-table-header: rgba(255, 255, 255, 0.02);
+            --bg-row-hover: rgba(229, 193, 88, 0.04);
+            --text-primary: #FFFFFF;
+            --text-muted: #A39185;
+            --text-gold: #E5C158;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(229, 193, 88, 0.2);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary);
+            display: flex; min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, rgba(229, 193, 88, 0.03) 0%, transparent 70%);
+        }
+
+        .main {
+            margin-left: var(--sidebar-width); padding: 40px 30px; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
+        .header { margin-bottom: 35px; padding-bottom: 15px; border-bottom: 1px solid var(--border-faint); display: flex; justify-content: space-between; align-items: flex-end; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 500; color: var(--text-primary); }
+        .header h1 em { color: var(--text-gold); font-style: italic; }
+        
+        .btn-add {
+            background: var(--text-gold); color: #000; padding: 12px 24px; border-radius: 8px;
+            text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase;
+            letter-spacing: 1px; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 10px 20px rgba(229, 193, 88, 0.15);
+        }
+        .btn-add:hover { background: #F4D37A; transform: translateY(-2px); box-shadow: 0 15px 30px rgba(229, 193, 88, 0.3); }
+
+        /* ===== ACTIVE DAY PANEL ===== */
+        .day-control-panel {
+            background: linear-gradient(135deg, rgba(28, 15, 10, 0.9), rgba(10, 7, 5, 0.95));
+            border: 1px solid var(--border-glow); border-radius: var(--radius); padding: 30px; margin-bottom: 40px;
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 40px rgba(229, 193, 88, 0.1);
+        }
+        .day-control-panel h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--text-gold); margin-bottom: 8px; font-weight: 400;}
+        .day-control-panel p { font-size: 13px; color: var(--text-muted); }
+
+        /* ===== TABLES ===== */
+        .card { 
+            background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-faint); 
+            overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--bg-table-header); color: var(--text-muted); padding: 16px 20px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap;}
+        td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; color: var(--text-primary); vertical-align: middle; }
+        tr:hover td { background: var(--bg-row-hover); }
+        tr:last-child td { border-bottom: none; }
+
+        .item-name { font-weight: 600; font-size: 15px; color: white; margin-bottom: 4px; display: block;}
+        .item-desc { font-size: 12px; color: var(--text-muted); display: block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .price-new { color: var(--text-gold); font-weight: 600; font-size: 15px; }
+        .price-old { color: var(--text-muted); font-size: 11px; text-decoration: line-through; margin-left: 6px; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--border-faint); background: rgba(255,255,255,0.03); color: var(--text-muted); }
+        .badge-active { background: rgba(229, 193, 88, 0.15); color: var(--text-gold); border-color: rgba(229, 193, 88, 0.3); }
+
+        .item-img { border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); width: 60px; height: 60px; background: var(--bg-body); }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-cell { display: flex; gap: 8px; justify-content: flex-end; }
+        .btn-edit, .btn-delete { padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 600; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px; text-transform: uppercase; }
+        .btn-edit { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border-faint); }
+        .btn-edit:hover { background: var(--text-gold); color: #000; border-color: var(--text-gold); }
+        .btn-delete { background: transparent; color: #E53E3E; border: 1px solid rgba(229, 62, 62, 0.3); }
+        .btn-delete:hover { background: rgba(229, 62, 62, 0.1); border-color: #E53E3E; }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/admin-sidebar :: sidebar"></div>
+
+<div class="main">
+
+    <div class="header">
+        <div>
+            <h1>Combo <em>Management</em></h1>
+            <p style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 6px;">Manage your daily specials and menu deals</p>
+        </div>
+        <a th:href="@{/admin/combos/add}" class="btn-add"><span>+</span> Add New Combo</a>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; color: var(--text-gold); font-weight: 400;">Assigned Daily Specials</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">These appear in the massive Hero Section on their assigned day.</p>
+    </div>
+    
+    <div class="card" style="margin-bottom: 50px;">
+        <table>
+            <thead>
+              <tr>
+                <th>Image</th> 
+                <th>Combo Details</th> 
+                <th>Assigned Day</th> 
+                <th>Price</th> 
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr th:each="combo : ${specialCombos}">
+                    <td style="width: 80px;">
+                        <img th:src="@{'/images/' + ${combo.image_url}}" class="item-img" alt="Combo Image">
+                    </td>
+                    <td>
+                        <span class="item-name" th:text="${combo.name}"></span>
+                        <span class="item-desc" th:text="${combo.description}"></span>
+                    </td>
+                    <td>
+                        <span th:text="${combo.assignedDay}" 
+                              th:class="${#strings.equalsIgnoreCase(combo.assignedDay, currentDay)} ? 'badge badge-active' : 'badge'">
+                        </span>
+                    </td>
+                    <td>
+                        <span class="price-new" th:text="'₹' + ${combo.new_price}"></span>
+                    </td>
+                    <td class="action-cell">
+                        <a th:href="@{/admin/combos/edit/{id}(id=${combo.combo_id})}" class="btn-edit">Edit</a>
+                        <a th:href="@{/admin/combos/delete/{id}(id=${combo.combo_id})}" onclick="return confirm('Delete this special?')" class="btn-delete">Del</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(specialCombos)}">
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">No Daily Specials assigned yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; color: white; font-weight: 400;">Standard Combos</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">These appear in the grid below the hero section and can be filtered by category.</p>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+              <tr>
+                <th>Image</th> 
+                <th>Combo Details</th> 
+                <th>Grid Category</th> 
+                <th>Price</th> 
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr th:each="combo : ${regularCombos}">
+                    <td style="width: 80px;">
+                        <img th:src="@{'/images/' + ${combo.image_url}}" class="item-img" alt="Combo Image">
+                    </td>
+                    <td>
+                        <span class="item-name" th:text="${combo.name}"></span>
+                        <span class="item-desc" th:text="${combo.description}"></span>
+                        <span class="badge" th:if="${combo.tag != null and combo.tag != ''}" th:text="${combo.tag}" style="margin-top: 4px;"></span>
+                    </td>
+                    <td>
+                        <span class="badge" th:text="${combo.category}" style="text-transform: uppercase;"></span>
+                    </td>
+                    <td>
+                        <span class="price-new" th:text="'₹' + ${combo.new_price}"></span>
+                        <span class="price-old" th:text="'₹' + ${combo.old_price}"></span>
+                    </td>
+                    <td class="action-cell">
+                        <a th:href="@{/admin/combos/edit/{id}(id=${combo.combo_id})}" class="btn-edit">Edit</a>
+                        <a th:href="@{/admin/combos/delete/{id}(id=${combo.combo_id})}" onclick="return confirm('Delete this combo?')" class="btn-delete">Del</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(regularCombos)}">
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">No standard combos created yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

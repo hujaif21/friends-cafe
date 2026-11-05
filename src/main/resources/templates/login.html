@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Friends Cafe Bar</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --espresso: #0a0806;
+            --gold: #C29B57;
+            --cream: #F5EFE6;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Jost', sans-serif;
+        }
+
+        /* Reset & Scroll Fix */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+       body {
+    /* 1. Set the image directly on the body */
+    background-image: url('/images/mwnu-hero.jfif');
+    
+    /* 2. Pro-Tip: background-color + blend-mode makes it "Look Good" without a gradient */
+    background-color: rgba(10, 8, 6, 0.75); /* Deep Espresso Tint */
+    background-blend-mode: darken; /* This creates a moody, premium café atmosphere */
+    
+    /* 3. Perfect Coverage */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps the image still while you scroll (Parallax effect) */
+    background-repeat: no-repeat;
+    
+    /* 4. Layout Alignment */
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* 5. Typography Smoothing */
+    -webkit-font-smoothing: antialiased;
+    color: #F5EFE6; /* Your signature cream color */
+}
+
+        /* Master wrapper to ensure the card is scrollable on small screens */
+        .page-wrapper {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto; 
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* --- BACKGROUND --- */
+  
+
+        /* --- THE ROUNDED CARD --- */
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 3.5rem 3rem;
+            background: rgba(15, 12, 10, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            /* Rounded effect for boutique feel */
+            border-radius: 50px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 2.5rem;
+            display: block;
+            text-decoration: none;
+            color: var(--cream);
+        }
+        .logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+
+        /* Role Toggle */
+        .role-nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .role-link {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            padding-bottom: 10px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.3);
+            transition: 0.4s;
+            position: relative;
+        }
+        .role-link.active { color: var(--gold); }
+        .role-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 1px;
+            background: var(--gold);
+        }
+
+        .written-header h1 {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+        .written-header h1 em { color: var(--gold); font-style: italic; }
+        .written-header p {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 2.5rem;
+        }
+
+        /* Error Banner Fix */
+        .error-banner {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 12px;
+            margin-bottom: 2rem;
+            color: #ff6b6b;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 8px;
+        }
+
+        /* Handmade Inputs */
+        .form-group { position: relative; margin-bottom: 2.5rem; text-align: left; }
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 0;
+            color: var(--cream);
+            font-size: 1.1rem;
+            transition: 0.4s;
+        }
+        .input-field:focus { outline: none; border-bottom-color: var(--gold); }
+        .label {
+            position: absolute;
+            top: 10px; left: 0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .input-field:focus ~ .label,
+        .input-field:not(:placeholder-shown) ~ .label {
+            top: -15px;
+            font-size: 0.6rem;
+            color: var(--gold);
+        }
+
+        /* Action Buttons */
+        .btn-reserve {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--gold);
+            color: var(--espresso);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+            transition: 0.4s;
+            margin-top: 10px;
+        }
+        .btn-reserve:hover { background: var(--cream); transform: translateY(-2px); }
+
+        .social-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--cream);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .social-pill:hover { background: rgba(255,255,255,0.05); border-color: var(--gold); }
+        .social-pill i { font-size: 1.2rem; color: var(--gold); }
+
+        .footer-note {
+            margin-top: 2.5rem;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .footer-note a { color: var(--gold); text-decoration: none; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-fixed"></div>
+
+    <div class="page-wrapper">
+        <main class="login-card">
+            <a th:href="@{/home}" class="logo">Friends <em>Cafe</em> Bar</a>
+
+            <nav class="role-nav">
+                <div id="user-tab" class="role-link active" onclick="switchRole('user')">User Access</div>
+                <div id="admin-tab" class="role-link" onclick="switchRole('admin')">Admin Portal</div>
+            </nav>
+
+            <header class="written-header">
+                <h1 id="main-title">Welcome <em>Back</em></h1>
+                <p id="sub-title">Access the reserve</p>
+            </header>
+
+            <div th:if="${error}" class="error-banner">
+                <i class="bi bi-exclamation-circle"></i>
+                <span th:text="${error}">Invalid Username or Password</span>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <input type="text" id="username" name="username" class="input-field" placeholder=" " required>
+                    <label class="label">Username</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="password" name="password" class="input-field" placeholder=" " required>
+                    <label class="label">Password</label>
+                </div>
+
+                <button type="submit" class="btn-reserve">Enter The Reserve</button>
+            </form>
+
+            <div class="social-pill" onclick="alert('Redirecting to Google...')">
+                <i class="bi bi-google"></i> Continue with Google
+            </div>
+
+            <footer class="footer-note">
+                New to the caffe? <a th:href="@{/}">   Create New Account     </a>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        function switchRole(role) {
+            const userTab = document.getElementById('user-tab');
+            const adminTab = document.getElementById('admin-tab');
+            const mainTitle = document.getElementById('main-title');
+            const subTitle = document.getElementById('sub-title');
+            
+            if (role === 'admin') {
+                adminTab.classList.add('active');
+                userTab.classList.remove('active');
+                mainTitle.innerHTML = "Manager's <em>Reserve</em>";
+                subTitle.textContent = "Authorized Brewmasters Only";
+            } else {
+                userTab.classList.add('active');
+                adminTab.classList.remove('active');
+                mainTitle.innerHTML = "Welcome <em>Back</em>";
+                subTitle.textContent = "Access the reserve";
+            }
+        }
+    </script>
+</body>
+</html>

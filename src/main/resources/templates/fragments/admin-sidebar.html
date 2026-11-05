@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="sidebar">
+    
+    <style>
+        /* ==========================================================================
+           ULTRA-PREMIUM ADMIN SIDEBAR UI - FRIENDS CAFE
+           Theme: Obsidian Espresso & Liquid Gold
+           ========================================================================== */
+
+        /* --- 1. CSS Variables for High-End Consistency --- */
+        :root {
+            --sidebar-width: 280px;
+            
+            /* Deeper, Richer Backgrounds (Obsidian aesthetic) */
+            --bg-base: #0A0705;       /* Almost Black/Deepest Espresso */
+            --bg-surface: #140E0A;    /* Very Dark Brown */
+            --bg-glass-hover: rgba(212, 175, 55, 0.08); /* Faint gold glass */
+            
+            /* Refined Typography Colors */
+            --text-primary: #FFFFFF;  /* Pure White for highest contrast */
+            --text-muted: #A39185;    /* Lighter, softer taupe */
+            --text-gold: #E5C158;     /* Brighter, more metallic gold */
+            
+            /* Accents & Borders */
+            --border-faint: rgba(255, 255, 255, 0.06); /* Very subtle white border instead of gold */
+            --border-glow: rgba(229, 193, 88, 0.5);
+            --glow-shadow: 0 8px 25px rgba(229, 193, 88, 0.15);
+            
+            /* Fluid Animations */
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Snappier, modern easing */
+        }
+
+        /* --- 2. Main Sidebar Container --- */
+        .brand-sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            
+            /* Refined Gradient & Shadow for maximum depth */
+            background: linear-gradient(165deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+            box-shadow: 15px 0 40px rgba(0, 0, 0, 0.8);
+            border-right: 1px solid var(--border-faint);
+            
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-y: auto;
+            overflow-x: hidden;
+            
+            /* Subtle texture overlay for a physical feel */
+            background-image: linear-gradient(165deg, var(--bg-surface) 0%, var(--bg-base) 100%), 
+                              url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+        }
+
+        /* --- Custom Thin Scrollbar --- */
+        .brand-sidebar::-webkit-scrollbar { width: 3px; }
+        .brand-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .brand-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .brand-sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-gold); }
+
+        /* --- 3. Sidebar Header (Logo & Brand) --- */
+        .sidebar-header {
+            padding: 45px 30px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Ambient Glow behind the logo - intensified slightly */
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: var(--text-gold);
+            filter: blur(60px);
+            opacity: 0.12;
+            z-index: 0;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .sidebar-header h3 {
+            position: relative;
+            z-index: 1;
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; /* Slightly larger */
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .sidebar-header h3 em {
+            color: var(--text-gold);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .sidebar-header p {
+            position: relative;
+            z-index: 1;
+            color: var(--text-muted);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 4px; /* Wider spacing looks more premium */
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Elegant Divider Line - Fades out beautifully */
+        .sidebar-divider {
+            height: 1px;
+            width: 75%;
+            margin: 20px auto 30px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+        }
+
+        /* --- 4. Navigation Menu --- */
+        .sidebar-nav {
+            flex: 1; 
+            padding: 0 20px; /* More breathing room */
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Category Labels */
+        .nav-category {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 25px 0 12px 15px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        /* --- 5. The Link Styling & Hover Effects --- */
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            padding: 12px 16px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        /* The Hover State Background - Glassy and soft */
+        .sidebar-nav a:hover {
+            color: var(--text-primary);
+            background: var(--bg-glass-hover);
+            transform: translateX(5px);
+        }
+
+        /* --- 6. Icon Styling & Animations --- */
+        .nav-icon {
+            margin-right: 16px;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: var(--transition-smooth);
+            color: var(--text-muted);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-nav a:hover .nav-icon {
+            background: rgba(229, 193, 88, 0.1);
+            border-color: rgba(229, 193, 88, 0.3);
+            color: var(--text-gold);
+            transform: scale(1.08); /* Smoother scaling, removed the tilt */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        /* --- 7. The ACTIVE State --- */
+        .sidebar-nav a.active {
+            color: var(--bg-base); /* Dark text on active... */
+            background: var(--text-gold); /* ...because background is solid gold */
+            font-weight: 600;
+            box-shadow: var(--glow-shadow);
+        }
+        
+        .sidebar-nav a.active .nav-icon {
+            background: transparent;
+            color: var(--bg-base); 
+            border: none;
+            box-shadow: none;
+            font-size: 18px;
+        }
+
+        /* --- 8. Bottom Action Area (Back Link & Profile) --- */
+        .sidebar-footer {
+            padding: 25px 20px;
+            margin-top: auto; 
+            background: rgba(0, 0, 0, 0.4); /* Darker footer grounds the design */
+            border-top: 1px solid var(--border-faint);
+        }
+
+        .back-link-wrapper a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition-smooth);
+        }
+
+        .back-link-wrapper a:hover {
+            border-color: var(--text-gold);
+            color: var(--text-gold);
+            background: rgba(229, 193, 88, 0.05);
+            transform: translateY(-2px);
+            box-shadow: var(--glow-shadow);
+        }
+
+        /* --- 9. Admin Profile Badge --- */
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .admin-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px; /* Squircle shape is more modern than pure circle */
+            background: linear-gradient(135deg, #FFDDA1 0%, var(--text-gold) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-base);
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(229, 193, 88, 0.2);
+        }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .admin-role {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* --- CSS Reset for Main Content Margin --- */
+        body { margin: 0; }
+        .main-content { margin-left: var(--sidebar-width); }
+        
+    </style>
+
+    <div class="brand-sidebar">
+        
+        <div class="sidebar-header">
+            <h3>Friends <em>Cafe</em></h3>
+            <p>Admin Portal</p>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-nav">
+            <div class="nav-category">Core Management</div>
+            <ul id="admin-nav-links">
+                <li>
+                    <a th:href="@{/admin/dashboard}" data-path="/admin/dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Dashboard Overview</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/loginData}" data-path="/admin/dashboard">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-text">Users Details</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/orders}" data-path="/orders">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Cafe Orders</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/admin/combos}" data-path="/admin/combos">
+                        <span class="nav-icon">🎁</span>
+                        <span class="nav-text">Daily Combos</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-category">Services</div>
+            <ul id="admin-service-links">
+                <li>
+                    <a th:href="@{/admin/reservations}" data-path="/admin/reservations">
+                        <span class="nav-icon">🕯️</span>
+                        <span class="nav-text">Reservations</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a th:href="@{/admin/menu}" data-path="/admin/menu">
+                        <span class="nav-icon">☕</span>
+                        <span class="nav-text">Menu Editor</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/friends_list}" data-path="/admin/dashboard">
+                        <span class="nav-icon">🖼️</span>
+                        <span class="nav-text">Friendship Wall</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="back-link-wrapper">
+                <a th:href="@{/home}">
+                    <span class="back-arrow">←</span> Return to Site
+                </a>
+            </div>
+
+            <div class="admin-profile">
+                <div class="admin-avatar">FC</div>
+                <div class="admin-info">
+                    <span class="admin-name">Admin Console</span>
+                    <span class="admin-role">System Manager</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the current URL path (e.g., "/admin/combos")
+            const currentPath = window.location.pathname;
+            
+            // Get all the links in the sidebar
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                // Get the intended path for this specific link (stored in data-path)
+                const linkPath = link.getAttribute('data-path');
+                
+                // If the current browser URL includes this link's path, make it glow!
+                if (linkPath && currentPath.includes(linkPath)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active'); // Ensure others are turned off
+                }
+            });
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

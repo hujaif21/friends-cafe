@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Order Confirmed — Friends Cafe Bar</title>
+    <meta name="description" content="Your order at Friends Cafe Bar has been confirmed. View your receipt and order details.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+   
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5EFE6; --warm-white: #FDFAF6; --espresso: #1C0F0A;
+            --brown: #3D1F10; --caramel: #C28A50; --gold: #D4A85A;
+            --muted: #8C7B6E; --border: rgba(194, 138, 80, 0.2);
+            --green: #2a7a4a; --shadow-soft: 0 20px 40px rgba(28, 15, 10, 0.1);
+            --shadow-hover: 0 30px 60px rgba(28, 15, 10, 0.15); --radius-pill: 50px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Jost', sans-serif; background: var(--warm-white); color: var(--espresso); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .page-bg { position: fixed; inset: 0; z-index: -2; background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&q=80') center/cover no-repeat; }
+        .page-bg-overlay { position: fixed; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(245, 235, 220, 0.72) 0%, rgba(240, 228, 210, 0.8) 35%, rgba(248, 240, 228, 0.9) 100%); backdrop-filter: blur(2px); }
+        .page-bg-overlay::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; }
+
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 60px; height: 72px; display: flex; align-items: center; justify-content: space-between; background: rgba(28, 15, 10, 0.97); backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(212, 168, 90, 0.12); }
+        .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: white; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+        .nav-links { display: flex; gap: 40px; list-style: none; align-items: center; }
+        .nav-links a { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255, 255, 255, 0.65); text-decoration: none; transition: color 0.3s; font-weight: 400; }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        .nav-cta { background: var(--gold); color: var(--espresso) !important; padding: 9px 24px; border-radius: 2px; font-weight: 600 !important; transition: all 0.3s; }
+        .nav-cta:hover { background: white !important; }
+
+        .hero { height: 35vh; min-height: 280px; position: relative; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; text-align: center; padding-top: 100px; }
+        .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=90') center/cover no-repeat; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18, 8, 3, 0.6) 0%, rgba(28, 15, 10, 0.95) 100%); }
+        .hero-content { position: relative; z-index: 2; animation: fadeUp 0.8s ease forwards; }
+        .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px); color: white; font-weight: 300; line-height: 1; margin-bottom: 8px; }
+        .hero h1 em { font-style: italic; color: var(--gold); }
+        .hero p { font-size: 14px; color: rgba(255, 255, 255, 0.6); font-weight: 300; letter-spacing: 1px; text-transform: uppercase; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .confirm-wrapper { max-width: 620px; margin: -80px auto 80px; padding: 0 20px; position: relative; z-index: 10; flex: 1; }
+
+        .success-bar { display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--green); color: white; padding: 14px 24px; border-radius: 12px 12px 0 0; font-size: 13px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); animation: fadeUp 0.6s 0.2s ease both; }
+        .success-bar span { font-size: 18px; }
+
+        .receipt-card { background: white; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: var(--shadow-soft); animation: fadeUp 0.6s 0.3s ease both; border: 1px solid rgba(0,0,0,0.04); border-top: none; }
+
+        .receipt-header { background: var(--espresso); padding: 28px 36px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--gold); }
+        .receipt-order-id { font-family: 'Jost', sans-serif; font-size: 24px; color: white; font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
+        .receipt-date { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+        #receiptImage { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+        .receipt-body { padding: 8px 36px 0; background: white; }
+        .receipt-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px dashed rgba(194, 138, 80, 0.3); }
+        .receipt-row:last-of-type { border-bottom: none; }
+        .receipt-key { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+        .receipt-val { font-size: 15px; color: var(--espresso); font-weight: 500; text-align: right; max-width: 250px; }
+
+        .extras-list { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+        .extras-list span { background: var(--cream); color: var(--brown); font-size: 11px; padding: 4px 12px; border-radius: 4px; font-weight: 600; }
+
+        .receipt-total { display: flex; justify-content: space-between; align-items: center; background: #FAF6F0; padding: 24px 36px; margin-top: 10px; border-top: 1px dashed var(--caramel); }
+        .receipt-total-label { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--brown); font-weight: 600; }
+        .receipt-total-value { font-family: 'Cormorant Garamond', serif; font-size: 38px; color: var(--gold); font-weight: 700; line-height: 1; }
+
+        .confirm-actions { display: flex; gap: 16px; margin-top: 36px; justify-content: center; animation: fadeUp 0.6s 0.5s ease both; flex-wrap: wrap; }
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--espresso); color: white; padding: 16px 36px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; border: none; border-radius: var(--radius-pill); cursor: pointer; transition: all 0.3s ease; text-decoration: none; box-shadow: 0 8px 20px rgba(28, 15, 10, 0.15); flex: 1; min-width: 200px; }
+        .btn-primary:hover { background: var(--caramel); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(194, 138, 80, 0.25); }
+        .btn-print { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: white; color: var(--espresso); padding: 16px 36px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; border: 1px solid var(--espresso); border-radius: var(--radius-pill); cursor: pointer; transition: all 0.3s ease; text-decoration: none; flex: 1; min-width: 200px; }
+        .btn-print:hover { background: var(--espresso); color: white; transform: translateY(-2px); }
+
+        footer { background: linear-gradient(180deg, #0D0705 0%, #1a0e08 50%, #0D0705 100%); padding: 0 60px 28px; position: relative; margin-top: auto;}
+        footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--caramel) 70%, transparent 100%); }
+        .footer-glow { text-align: center; padding: 48px 0 36px; }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: white; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; display: inline-block; }
+        .footer-logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap; gap: 12px; }
+        .footer-copy { font-size: 11px; color: rgba(255, 255, 255, 0.15); letter-spacing: 0.5px; }
+        .footer-badge { font-size: 11px; color: rgba(255, 255, 255, 0.25); }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 24px; } .nav-links { display: none; }
+            .hero { height: 30vh; }
+            .confirm-wrapper { margin-top: -60px; padding: 0 20px; }
+            .confirm-actions a, .confirm-actions button { width: 100%; }
+            footer { padding: 30px 24px 20px; }
+        }
+        /* ==========================================================================
+           100% OFFLINE COLOR PDF LOGIC 
+           ========================================================================== */
+        @media print {
+            /* Force the browser to print all background colors and images perfectly */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Hide the navigation, buttons, and background wallpapers */
+            body > *:not(.confirm-wrapper) { display: none !important; }
+            .page-bg, .page-bg-overlay, .page-glow-left, nav, .hero, .success-bar, .confirm-actions, footer { display: none !important; }
+            
+            /* Give the PDF itself a clean white background, but keep the card colorful */
+            body, html { background: white !important; height: auto; }
+            
+            /* Center the colorful receipt on the PDF */
+            .confirm-wrapper { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+            }
+
+            .receipt-card { 
+                box-shadow: none !important; 
+                border: 1px solid #C28A50 !important; /* Caramel border */
+                width: 100%;
+                max-width: 500px; 
+                margin-top: 20px;
+                background: white !important;
+            }
+
+            /* Force the Espresso & Gold Header */
+            .receipt-header { 
+                background: #1C0F0A !important; 
+                border-bottom: 3px solid #D4A85A !important; 
+            }
+            .receipt-order-id { color: #FFFFFF !important; }
+            .receipt-date { color: #D4A85A !important; }
+            
+            /* Keep the item image visible! */
+            #receiptImage { display: block !important; }
+            
+            /* Force the gold total text */
+            .receipt-total { background: #FAF6F0 !important; border-top: 1px dashed #C28A50 !important; }
+            .receipt-total-value { color: #D4A85A !important; }
+        }
+        
+               
+          </style>
+</head>
+
+<body>
+    <div class="page-bg"></div>
+    <div class="page-bg-overlay"></div>
+    <div class="page-glow-left"></div>
+
+    <nav>
+        <a th:href="@{/home}" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+            <li><a th:href="@{/combos}">Order Combos</a></li>
+            <li><a th:href="@{/reservation}" class="nav-cta">Reserve Table</a></li>
+             <div th:replace="~{common/cart-fragment :: cart-icon}"></div>
+        </ul>
+        
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Order <em>Confirmed</em></h1>
+            <p>Your barista is warming up</p>
+        </div>
+    </section>
+
+    <div class="confirm-wrapper">
+        <div class="success-bar">
+            <span>✓</span> Payment Received Successfully
+        </div>
+
+        <div class="receipt-card">
+         <div class="receipt-header">
+                <div>
+                    <div class="receipt-order-id" id="orderId">FCB-0000</div>
+                    <div class="receipt-date" id="receiptDate">Date</div>
+                </div>
+                <div id="receiptImageContainer" style="display: flex; align-items: center;">
+                    <img id="receiptImage" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200" alt="Item">
+                </div>
+            </div>
+            
+            <div class="receipt-body">
+                <div class="receipt-row">
+                    <span class="receipt-key">Customer</span>
+                    <span class="receipt-val" id="rCustomer">Guest</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-key">Item</span>
+                    <span class="receipt-val" id="rItem">Classic Coffee</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-key">Size</span>
+                    <span class="receipt-val" id="rSize">Regular</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-key">Quantity</span>
+                    <span class="receipt-val" id="rQty">×1</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-key">Add-ons</span>
+                    <div class="extras-list" id="rExtras"><span>None</span></div>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-key">Payment</span>
+                    <span class="receipt-val" id="rPayment">Pay at Counter</span>
+                </div>
+                <div id="rNotesRow" class="receipt-row" style="display:none;">
+                    <span class="receipt-key">Notes</span>
+                    <span class="receipt-val" id="rNotes"></span>
+                </div>
+            </div>
+            
+            <div style="padding: 16px 36px; text-align: center; background: white;">
+                <span style="font-size: 11px; color: var(--muted); font-style: italic;">Note: Your total below reflects any applied promo codes.</span>
+            </div>
+
+            <div class="receipt-total">
+                <span class="receipt-total-label">Total</span>
+                <span class="receipt-total-value" id="rTotal">₹0</span>
+            </div>
+        </div>
+
+        <div class="confirm-actions">
+            <a th:href="@{/track}" class="btn-primary">Track Your Order →</a>
+      <button class="btn-print" onclick="downloadReceipt()">📩 Download PDF Receipt</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-glow">
+            <a th:href="@{/home}" class="footer-logo">Friends <em>Cafe</em> Bar</a>
+            <p class="footer-tagline">"Where every cup tells a story of friendship, trust & love"</p>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2026 Friends Cafe Bar. All rights reserved.</p>
+            <div class="footer-badge">☕ Brewed with love in Ahmedabad, India 🇮🇳</div>
+        </div>
+    </footer>
+
+ <script th:inline="javascript">
+        // 1. SECURE DATA RETRIEVAL
+        const displayId = /*[[${displayId}]]*/ 'FCB-0000'; 
+        const customer = /*[[${customer}]]*/ 'Guest';
+        const item = /*[[${item}]]*/ 'Classic Coffee';
+        const size = /*[[${size}]]*/ 'Regular';
+        const qty = parseInt(/*[[${qty}]]*/ 1);
+        const extras = /*[[${extras}]]*/ 'None';
+        const payment = /*[[${payment}]]*/ 'Pay at Counter';
+        const total = /*[[${total}]]*/ 0; 
+        const notes = /*[[${inst}]]*/ ''; 
+
+        // 2. POPULATE RECEIPT TEXT
+        document.getElementById('orderId').textContent = displayId;
+        document.getElementById('rCustomer').textContent = customer;
+        document.getElementById('rItem').textContent = item;
+        document.getElementById('rSize').textContent = size;
+        document.getElementById('rQty').textContent = '×' + qty;
+        document.getElementById('rPayment').textContent = payment;
+        document.getElementById('rTotal').textContent = '₹' + total;
+        
+     // 3. MULTI-IMAGE & DATE LOGIC
+        const savedImageString = sessionStorage.getItem('orderImage');
+        const imgContainer = document.getElementById('receiptImageContainer');
+
+        if (savedImageString && imgContainer) {
+            imgContainer.innerHTML = ''; // Clear default image
+            
+            // Decode and split the images
+            const decodedString = decodeURIComponent(savedImageString);
+            const paths = decodedString.split(',');
+
+            // Show a maximum of 3 images so the receipt doesn't get cluttered
+            const displayPaths = paths.slice(0, 3);
+
+            displayPaths.forEach((path, index) => {
+                const img = document.createElement('img');
+                img.src = path.startsWith('/') ? path : '/' + path;
+                
+                // Luxury Circle Styling
+                img.style.width = '70px';
+                img.style.height = '70px';
+                img.style.borderRadius = '50%';
+                img.style.objectFit = 'cover';
+                img.style.border = '3px solid #1C0F0A'; // Espresso border creates the cut-out effect!
+                img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+                
+                // Overlap effect: Pull images to the left, except the first one
+                if (index > 0) {
+                    img.style.marginLeft = '-30px'; 
+                }
+                
+                img.style.position = 'relative';
+                img.style.zIndex = 10 - index; // Ensure the first image stays on top
+
+                imgContainer.appendChild(img);
+            });
+        }
+
+        const now = new Date();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear() + ' — ' +
+            now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+        document.getElementById('receiptDate').textContent = dateStr;
+
+        // 4. EXTRAS & NOTES
+        const extrasContainer = document.getElementById('rExtras');
+        if (extras && extras !== 'None') {
+            const extrasArr = extras.split(',').map(e => e.trim()).filter(e => e);
+            if (extrasArr.length > 0) {
+                extrasContainer.innerHTML = extrasArr.map(e => '<span>' + e + '</span>').join('');
+            }
+        }
+
+        if (notes) {
+            const notesRow = document.getElementById('rNotesRow');
+            if (notesRow) {
+                notesRow.style.display = 'flex';
+                document.getElementById('rNotes').textContent = notes;
+            }
+        }
+
+        document.title = 'Receipt ' + displayId + ' — Friends Cafe Bar';
+  
+    
+// 5. 100% OFFLINE PDF GENERATION
+        function downloadReceipt() {
+            
+            window.print();
+        }
+    </script>
+</body>
+</html>

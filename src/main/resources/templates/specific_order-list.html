@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Specific Orders — Friends Cafe Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           ULTRA-PREMIUM ADMIN MAIN CONTENT - FRIENDS CAFE
+           Theme: Obsidian Espresso & Liquid Gold
+           ========================================================================== */
+           
+        :root {
+            --sidebar-width: 280px;
+
+            /* Deep Obsidian/Espresso Backgrounds */
+            --bg-body: #050302;         
+            --bg-card: #0A0705;         
+            --bg-table-header: rgba(255, 255, 255, 0.02);
+            --bg-row-hover: rgba(229, 193, 88, 0.04); /* Slightly more visible hover */
+            
+            /* Typography */
+            --text-primary: #FFFFFF;
+            --text-muted: #A39185;
+            --text-gold: #E5C158;
+            
+            /* Borders & Accents */
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(229, 193, 88, 0.2);
+            --glow-shadow: 0 8px 25px rgba(229, 193, 88, 0.1);
+            
+            /* Status Colors */
+            --status-received-bg: rgba(255, 255, 255, 0.1);
+            --status-received-text: #A39185;
+            --status-brewing-bg: rgba(229, 193, 88, 0.15);
+            --status-brewing-text: #E5C158;
+            --status-ready-bg: rgba(72, 187, 120, 0.15);
+            --status-ready-text: #48BB78;
+            
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            
+            /* Subtle texture overlay */
+            background-image: radial-gradient(circle at 50% 0%, rgba(229, 193, 88, 0.03) 0%, transparent 70%),
+                              url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+        }
+
+        /* ===== MAIN CONTENT LAYOUT ===== */
+        .main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 30px; /* Reduced padding to give table more room */
+            width: calc(100% - var(--sidebar-width));
+            display: flex;
+            flex-direction: column;
+            /* Prevent horizontal scroll on the main container */
+            max-width: 100%; 
+            overflow-x: hidden; 
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-faint);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+        
+        .header h1 em {
+            color: var(--text-gold);
+            font-style: italic;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ===== TABLE CARD (Glassmorphism) ===== */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-faint);
+            position: relative;
+            /* Keep scroll on the card itself if screen gets extremely small */
+            width: 100%;
+            overflow-x: auto; 
+        }
+        
+        /* Subtle glowing top edge */
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-glow), transparent); opacity: 0.5;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* Allow text to wrap if absolutely necessary, but prioritize truncating */
+            table-layout: auto; 
+        }
+
+        th {
+            background: var(--bg-table-header);
+            color: var(--text-muted);
+            padding: 16px 15px; /* Reduced padding */
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-faint);
+            white-space: nowrap; /* Keep headers on one line */
+        }
+
+        td {
+            padding: 16px 15px; /* Reduced padding */
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 13px; /* Slightly smaller text */
+            color: var(--text-primary);
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        tr:hover td {
+            background: var(--bg-row-hover);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Column Specific Adjustments */
+        .col-id { width: 5%; }
+        .col-customer { width: 15%; white-space: nowrap; }
+        
+        /* The Magic Fix for wide tables: Strict width + truncate */
+        .col-item { 
+            width: 25%; 
+            max-width: 200px; /* Force a maximum width */
+        }
+        
+        .col-size { width: 8%; }
+        .col-status { width: 10%; }
+        .col-total { width: 8%; }
+        .col-actions { width: 25%; text-align: right; }
+
+        .order-id {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .customer-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #E5C158; /* Make the item pop slightly */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* TRUNCATE EXTRAS SO THEY DON'T BREAK THE TABLE */
+        .truncate-extras {
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .size-tag {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-muted);
+            border: 1px solid var(--border-faint);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-amount {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ===== GLOWING STATUS BADGES ===== */
+        .status-badge {
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-size: 10px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            display: inline-block;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+            white-space: nowrap;
+        }
+        
+        .status-received { 
+            background: var(--status-received-bg); 
+            color: var(--status-received-text); 
+        }
+        .status-brewing { 
+            background: var(--status-brewing-bg); 
+            color: var(--status-brewing-text); 
+            box-shadow: inset 0 0 0 1px rgba(229, 193, 88, 0.3), 0 0 10px rgba(229, 193, 88, 0.1);
+        }
+        .status-ready { 
+            background: var(--status-ready-bg); 
+            color: var(--status-ready-text); 
+            box-shadow: inset 0 0 0 1px rgba(72, 187, 120, 0.3), 0 0 10px rgba(72, 187, 120, 0.1);
+        }
+
+        /* ===== COMPACT ACTION BUTTONS ===== */
+        .action-cell-content {
+            display: flex;
+            gap: 6px; /* Tighter gap */
+            align-items: center;
+            justify-content: flex-end; /* Push to the right edge */
+            flex-wrap: nowrap; /* Prevent wrapping if possible */
+        }
+
+        /* Small icon-style buttons for status changes */
+        .btn-status-icon {
+            padding: 6px 8px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            font-size: 12px; 
+            transition: var(--transition);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            border: 1px solid var(--border-faint);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-status-icon:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: var(--text-primary); 
+            border-color: rgba(255,255,255,0.3); 
+            transform: translateY(-1px);
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-edit { 
+            background: var(--text-gold); 
+            color: #000; 
+            box-shadow: 0 4px 10px rgba(229, 193, 88, 0.15);
+        }
+        .btn-edit:hover { 
+            background: #F4D37A; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(229, 193, 88, 0.3);
+        }
+        
+        .btn-delete { 
+            background: transparent; 
+            color: #E53E3E; 
+            border: 1px solid rgba(229, 62, 62, 0.3); 
+        }
+        .btn-delete:hover { 
+            background: rgba(229, 62, 62, 0.1); 
+            border-color: #E53E3E;
+        }
+
+        /* A subtle visual divider between status actions and manage actions */
+        .action-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border-faint);
+            margin: 0 4px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .btn-edit span, .btn-delete span { display: none; } /* Hide text, show icons on medium screens */
+            .action-cell-content { gap: 4px; }
+        }
+        @media (max-width: 1024px) { 
+            .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px 20px;} 
+        }
+        @media (max-width: 768px) { 
+            body { flex-direction: column; } 
+            .main { margin-left: 0; width: 100%; padding: 20px 15px; } 
+            .header h1 { font-size: 26px; }
+            .col-item { max-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/admin-sidebar :: sidebar"></div>
+
+<div class="main">
+
+    <div class="header">
+        <div>
+            <h1>Live <em>Orders</em></h1>
+            <p>Manage Customer Requests & Priority Combos</p>
+        </div>
+        
+        <form th:action="@{/orders}" method="get" style="display: flex; gap: 10px; margin: 0; align-items: center;">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by customer name..." 
+                   style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-faint); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); outline: none; font-family: inherit; font-size: 13px; min-width: 220px;">
+            <button type="submit" style="background: var(--text-gold); color: #000; padding: 10px 18px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <h2 style="font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-gold); margin-bottom: 15px;">
+        🎁 Priority <em>Combo</em> Queue
+    </h2>
+    
+    <div class="card" style="margin-bottom: 50px; border: 1px solid rgba(229, 193, 88, 0.2); box-shadow: 0 10px 30px rgba(229, 193, 88, 0.05);">
+        <table>
+            <thead>
+                <tr style="background: rgba(229, 193, 88, 0.05);">
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Combo Package</th>
+                    <th>Location / Table</th>
+                    <th>Status</th> 
+                    <th>Total</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+               <tr th:each="o, iterStat : ${comboOrders}">
+                    <td class="order-id" th:text="'FCB-C' + ${iterStat.count}" style="color: var(--text-muted); font-size: 12px; font-weight: 600;"></td>
+                    
+                    <td class="customer-name" th:text="${o.customerName}" style="color: var(--text-gold); font-weight: 600;"></td>
+                    <td th:text="${o.itemName}"></td>
+                    <td th:text="${o.specialNotes}" style="font-style: italic; color: var(--text-muted);"></td>
+                    <td>
+                        <span class="status-badge" 
+                              th:classappend="${o.status == 'Ready' ? 'status-ready' : (o.status == 'Brewing' ? 'status-brewing' : 'status-received')}" 
+                              th:text="${o.status}">
+                        </span>
+                    </td>
+                    <td class="total-amount" th:text="'₹' + ${o.totalAmount}"></td>
+                    <td class="col-actions">
+                        <div class="action-cell-content" style="justify-content: flex-end;">
+                            <a th:href="@{'/specific/update-status/' + ${o.id} + '?status=Brewing'}" class="btn-status-icon">☕</a>
+                            <a th:href="@{'/specific/update-status/' + ${o.id} + '?status=Ready'}" class="btn-status-icon">🛍️</a>
+                            <a th:href="@{'/specific/delete/' + ${o.id}}" onclick="return confirm('Delete?')" class="btn-delete">🗑️</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(comboOrders)}">
+                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">No active combo orders found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 style="font-family: 'Playfair Display', serif; font-size: 22px; color: white; margin-bottom: 15px;">
+        ☕ Standard <em>Menu</em> Queue
+    </h2>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Item & Details</th>
+                    <th>Size/Qty</th>
+                    <th>Status</th> 
+                    <th>Total</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+               <tr th:each="o, iterStat : ${singleOrders}">
+                    <td class="order-id" th:text="'FCB-' + ${iterStat.count}" style="color: var(--text-muted); font-size: 12px; font-weight: 600;"></td>
+                    
+                    <td class="customer-name" th:text="${o.customerName}"></td>
+                    <td class="col-item">
+                        <div class="item-name" th:text="${o.itemName}"></div>
+                        <span class="truncate-extras" th:text="${o.extras}"></span>
+                    </td>
+                    <td>
+                        <span class="size-tag" th:text="${o.size}"></span>
+                    </td>
+                    <td>
+                        <span class="status-badge" 
+                              th:classappend="${o.status == 'Ready' ? 'status-ready' : (o.status == 'Brewing' ? 'status-brewing' : 'status-received')}" 
+                              th:text="${o.status}">
+                        </span>
+                    </td>
+                    <td class="total-amount" th:text="'₹' + ${o.totalAmount}"></td>
+                    <td class="col-actions">
+                        <div class="action-cell-content" style="justify-content: flex-end;">
+                            <a th:href="@{'/specific/update-status/' + ${o.id} + '?status=Brewing'}" class="btn-status-icon">☕</a>
+                            <a th:href="@{'/specific/update-status/' + ${o.id} + '?status=Ready'}" class="btn-status-icon">🛍️</a>
+                            <a th:href="@{'/specific/delete/' + ${o.id}}" class="btn-delete">🗑️</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(singleOrders)}">
+                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">No standard orders in queue.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+</body>
+</html>

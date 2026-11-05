@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Friends Cafe Bar</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           1. PREMIUM THEME DEFINITION
+           ========================================= */
+        :root {
+            --espresso-black: #0a0806; /* The "Premium" deep background */
+            --espresso-soft: #14100c;
+            --gold: #C29B57;
+            --cream: #F5EFE6;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Jost', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--espresso-black);
+            color: var(--cream);
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================================
+           2. DUAL SCREEN LAYOUT
+           ========================================= */
+        .master-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* --- SIDE IMAGE PANEL --- */
+        .image-panel {
+            flex: 1;
+            position: relative;
+            /* Uses your uploaded cafe image */
+            background-image: url('/images/mwnu-hero.jfif');
+            background-size: cover;
+            background-position: center;
+            background-color: rgba(10, 8, 6, 0.7);
+            background-blend-mode: darken; /* Infuses the image with Espresso tones */
+            display: none; /* Hidden on mobile */
+        }
+
+        @media (min-width: 1024px) {
+            .image-panel { display: flex; align-items: flex-end; padding: 5rem; }
+        }
+
+        .panel-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .panel-tagline {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-family: var(--font-serif);
+            font-size: 3.5rem;
+            font-weight: 300;
+            line-height: 1.1;
+        }
+
+        .panel-title em { color: var(--gold); font-style: italic; }
+
+        /* --- FORM PANEL --- */
+        .form-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background-color: var(--espresso-black);
+            position: relative;
+        }
+
+        /* Subtle grain texture for that "Handmade" feel */
+        .form-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 380px;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        /* =========================================
+           3. BESPOKE FORM ELEMENTS
+           ========================================= */
+        .form-header { margin-bottom: 3.5rem; }
+        
+        .form-title {
+            font-family: var(--font-serif);
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(245, 239, 230, 0.4);
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Handmade floating label inputs */
+        .bespoke-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 0;
+            color: var(--cream);
+            font-size: 1.1rem;
+            transition: 0.4s;
+            border-radius: 0;
+        }
+
+        .bespoke-input:focus {
+            outline: none;
+            border-bottom-color: var(--gold);
+        }
+
+        .bespoke-label {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        .bespoke-input:focus ~ .bespoke-label,
+        .bespoke-input:not(:placeholder-shown) ~ .bespoke-label {
+            top: -18px;
+            font-size: 0.6rem;
+            color: var(--gold);
+        }
+
+        /* THE GOLD ACTION BUTTON */
+        .btn-premium {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--gold);
+            color: var(--espresso-black);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+            transition: 0.4s;
+            margin-top: 1rem;
+        }
+
+        .btn-premium:hover {
+            background: var(--cream);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .footer-link {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-link a {
+            color: var(--gold);
+            text-decoration: none;
+            margin-left: 8px;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .footer-link a:hover { border-bottom-color: var(--gold); }
+          /* THE RETURN HOME LINK */
+        .btn-home-return {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            color: rgba(245, 239, 230, 0.4); /* Muted Cream */
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-decoration: none;
+            transition: 0.4s ease;
+            z-index: 10;
+        }
+
+        .btn-home-return:hover {
+            color: var(--gold);
+            transform: translateX(-5px); /* Smoothly slides left on hover */
+        }
+        
+        /* Adjust for mobile screens so it doesn't overlap */
+        @media (max-width: 768px) {
+            .btn-home-return {
+                top: 20px;
+                left: 20px;
+            }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="master-container">
+        
+        <div class="form-panel">
+            <a th:href="@{/home}" class="btn-home-return">← Return Home</a>
+            <div class="form-wrapper">
+                <header class="form-header">
+                    <h1 class="form-title">Register</h1>
+                    <p class="form-subtitle">Begin your premium journey</p>
+                </header>
+
+                <form th:action="@{/register}" th:object="${user}" method="post">
+                    
+                    <div class="form-group">
+                        <input type="text" id="username" th:field="*{username}" class="bespoke-input" placeholder=" " required autocomplete="off">
+                        <label class="bespoke-label">Username</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" id="email" th:field="*{email}" class="bespoke-input" placeholder=" " required autocomplete="email">
+                        <label class="bespoke-label">Email Address</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="password" th:field="*{password}" class="bespoke-input" placeholder=" " required>
+                        <label class="bespoke-label">Password</label>
+                    </div>
+
+                    <button type="submit" class="btn-premium">Create Account</button>
+
+                </form>
+
+                <footer class="footer-link">
+                    Already a member? <a th:href="@{/login}">Sign In</a>
+                </footer>
+            </div>
+        </div>
+
+        <div class="image-panel">
+            <div class="panel-content">
+                <p class="panel-tagline">Friends Cafe Bar</p>
+                <h2 class="panel-title">Join the <br><em>Reserve</em>.</h2>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

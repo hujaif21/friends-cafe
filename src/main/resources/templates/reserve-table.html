@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserve a Table — Friends Cafe Bar</title>
+    <meta name="description"
+        content="Reserve your table at Friends Cafe Bar. Experience warmth, friendship, and the perfect cup.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5EFE6;
+            --warm-white: #FDFAF6;
+            --espresso: #1C0F0A;
+            --brown: #3D1F10;
+            --caramel: #C28A50;
+            --gold: #D4A85A;
+            --muted: #8C7B6E;
+            --border: rgba(194, 138, 80, 0.2);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--warm-white);
+            color: var(--espresso);
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--caramel);
+            border-radius: 4px;
+        }
+
+        /* ========== NAVBAR ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 60px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(28, 15, 10, 0.97);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(212, 168, 90, 0.12);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .nav-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--gold);
+        }
+
+        .nav-cta {
+            background: var(--gold);
+            color: var(--espresso) !important;
+            padding: 9px 24px;
+            border-radius: 2px;
+            font-weight: 600 !important;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: white !important;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            height: 55vh;
+            min-height: 420px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1920&q=90') center/cover no-repeat;
+            transform: scale(1.05);
+            animation: heroZoom 12s ease-out forwards;
+        }
+
+        @keyframes heroZoom {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(18, 8, 3, 0.6) 0%,
+                    rgba(28, 15, 10, 0.75) 50%,
+                    rgba(28, 15, 10, 0.92) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 0.9s ease forwards;
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .hero-eyebrow span {
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .eyebrow-line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.6;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(42px, 6vw, 80px);
+            color: white;
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 14px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 300;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== FORM SECTION ========== */
+        .reserve-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            max-width: 1200px;
+            margin: -80px auto 0;
+            position: relative;
+            z-index: 10;
+            padding: 0 40px;
+        }
+
+        /* Left Column — Atmospheric Image */
+        .reserve-ambience {
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px 0 0 6px;
+            min-height: 600px;
+        }
+
+        .reserve-ambience img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) saturate(1.1);
+        }
+
+        .ambience-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(28, 15, 10, 0.85) 100%);
+        }
+
+        .ambience-text {
+            position: absolute;
+            bottom: 50px;
+            left: 40px;
+            right: 40px;
+            z-index: 2;
+        }
+
+        .ambience-text h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 300;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .ambience-text h3 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .ambience-text p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .ambience-features {
+            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ambience-features span {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 3px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Right Column — Reservation Form */
+        .reserve-form-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 0 6px 6px 0;
+            padding: 56px 48px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .form-label::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+        .form-label span {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--caramel);
+        }
+
+        .form-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 300;
+            color: var(--espresso);
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .form-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 300;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .field-group {
+            margin-bottom: 24px;
+        }
+
+        .field-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 400;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .field-input,
+        .field-select {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--warm-white);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Jost', sans-serif;
+            font-size: 15px;
+            color: var(--espresso);
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .field-input:focus,
+        .field-select:focus {
+            border-color: var(--caramel);
+            box-shadow: 0 0 0 3px rgba(194, 138, 80, 0.1);
+        }
+
+        .field-input::placeholder {
+            color: rgba(140, 123, 110, 0.5);
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Occasion Selector */
+        .occasion-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .occasion-option input {
+            display: none;
+        }
+
+        .occasion-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .occasion-card:hover {
+            border-color: var(--caramel);
+        }
+
+        .occasion-option input:checked+.occasion-card {
+            border-color: var(--gold);
+            background: rgba(212, 168, 90, 0.06);
+            box-shadow: 0 0 0 1px var(--gold);
+        }
+
+        .occasion-emoji {
+            font-size: 22px;
+        }
+
+        .occasion-name {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* Reading Mood */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .mood-option input {
+            display: none;
+        }
+
+        .mood-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .mood-card:hover {
+            border-color: var(--caramel);
+        }
+
+        .mood-option input:checked+.mood-card {
+            border-color: var(--gold);
+            background: rgba(212, 168, 90, 0.06);
+            box-shadow: 0 0 0 1px var(--gold);
+        }
+
+        .mood-emoji {
+            font-size: 20px;
+        }
+
+        .mood-name {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .mood-hint {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 300;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            margin-top: 12px;
+            background: var(--gold);
+            color: var(--espresso);
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid var(--gold);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--espresso);
+            color: var(--gold);
+            border-color: var(--espresso);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(28, 15, 10, 0.15);
+        }
+
+        .btn-home {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .btn-home:hover {
+            color: var(--caramel);
+        }
+
+        /* ========== TRUST STRIP ========== */
+        .trust-strip {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trust-icon {
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        .trust-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .trust-val {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            color: var(--espresso);
+            font-weight: 600;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: linear-gradient(180deg, #0D0705 0%, #1a0e08 50%, #0D0705 100%);
+            padding: 0 60px 28px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--caramel) 70%, transparent 100%);
+        }
+
+        .footer-glow {
+            text-align: center;
+            padding: 48px 0 36px;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .footer-logo em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 300;
+            margin-top: 10px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            padding: 24px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+
+        .footer-nav a {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .footer-nav a:hover {
+            color: var(--gold);
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 28px 0 24px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-social a:hover {
+            border-color: var(--gold);
+            background: rgba(212, 168, 90, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-badge {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--espresso);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 4px;
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 9999;
+            border-left: 3px solid var(--gold);
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .reserve-section {
+                grid-template-columns: 1fr;
+                padding: 0 24px;
+            }
+
+            .reserve-ambience {
+                display: none;
+            }
+
+            .reserve-form-card {
+                border-radius: 6px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .reserve-form-card {
+                padding: 40px 28px;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            .occasion-grid,
+            .mood-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .trust-strip {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            footer {
+                padding: 30px 24px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="friends-cafe-home.html" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+              <li><a th:href="@{/combos}">Order Combo</a></li>
+            <li><a href="#" class="active">Reserve</a></li>
+            <li><a th:href="@{/reservation}" class="nav-cta">Reserve Table</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <div class="eyebrow-line"></div>
+                <span>Friends Cafe Bar</span>
+                <div class="eyebrow-line"></div>
+            </div>
+            <h1>Reserve Your <em>Table</em></h1>
+            <p>Friendship, trust, and love — all served at your table with the perfect cup.</p>
+        </div>
+    </section>
+
+    <!-- RESERVATION FORM SECTION -->
+    <div class="reserve-section">
+
+        <!-- Left Column: Ambience -->
+        <div class="reserve-ambience">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&q=90" alt="Cafe interior">
+            <div class="ambience-overlay"></div>
+            <div class="ambience-text">
+                <h3>Where Every <em>Moment</em> Matters</h3>
+                <p>Whether it's catching up with old friends, a quiet date night, or a celebration worth remembering —
+                    your table is waiting.</p>
+                <div class="ambience-features">
+                    <span>☕ Premium Brews</span>
+                    <span>🕯 Cozy Ambience</span>
+                    <span>📚 Curated Library</span>
+                    <span>🎵 Live Acoustics</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Form -->
+        <div class="reserve-form-card">
+            <div class="form-label"><span>Reservation</span></div>
+            <h2 class="form-title">Book Your <em>Experience</em></h2>
+            <p class="form-subtitle">Fill in your details below and we'll save the perfect spot for you and your
+                friends.</p>
+
+         <form th:action="@{/saveReservation}" 
+      th:object="${reservation}" 
+      method="post">
+
+                <!-- Name -->
+                <div class="field-group">
+                    <label class="field-label">Your Name</label>
+                   <input type="text"
+       class="field-input"
+       th:field="*{customer_name}"
+       placeholder="e.g. Aarav Sharma"
+       required>
+                </div>
+
+           <input type="date"
+       id="date"
+       class="field-input"
+       th:field="*{reservation_date}"
+       required>
+
+<input type="time"
+       id="time"
+       class="field-input"
+       th:field="*{reservation_time}"
+       required>
+
+                <!-- Guests & Phone -->
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">Number of Guests</label>
+                        <select class="field-select" th:field="*{guests}">
+                            <option value="2">2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                            <option value="5">5 Guests</option>
+                            <option value="6">6+ Guests (Large Group)</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Phone Number</label>
+                       <input type="tel"
+       class="field-input"
+       th:field="*{phone}">
+                    </div>
+                </div>
+
+                <!-- Occasion -->
+                <div class="field-group">
+                    <label class="field-label">What's the Occasion?</label>
+                    <div class="occasion-grid">
+                        <label class="occasion-option">
+                           <input type="radio"
+       th:field="*{occasion}"
+       value="friends"
+       checked>
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">👫</span>
+                                <span class="occasion-name">Friends</span>
+                            </div>
+                        </label>
+                        <label class="occasion-option">
+                            <input type="radio" th:field="*{occasion}"  value="date">
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">💑</span>
+                                <span class="occasion-name">Date Night</span>
+                            </div>
+                        </label>
+                        <label class="occasion-option">
+                            <input type="radio" th:field="*{occasion}"  value="celebration">
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">🎂</span>
+                                <span class="occasion-name">Celebration</span>
+                            </div>
+                        </label>
+                        <label class="occasion-option">
+                            <input type="radio" th:field="*{occasion}"  value="work">
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">💼</span>
+                                <span class="occasion-name">Work Meet</span>
+                            </div>
+                        </label>
+                        <label class="occasion-option">
+                            <input type="radio" th:field="*{occasion}"  value="solo">
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">📖</span>
+                                <span class="occasion-name">Solo Time</span>
+                            </div>
+                        </label>
+                        <label class="occasion-option">
+                            <input type="radio" th:field="*{occasion}"  value="family">
+                            <div class="occasion-card">
+                                <span class="occasion-emoji">👨‍👩‍👧</span>
+                                <span class="occasion-name">Family</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Reading Mood -->
+                <div class="field-group">
+                    <label class="field-label">Reading Mood <span style="opacity:0.5;letter-spacing:0;">(if tables are
+                            full)</span></label>
+                    <div class="mood-grid">
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="romance" checked>
+                            <div class="mood-card">
+                                <span class="mood-emoji">💕</span>
+                                <span class="mood-name">Romance</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="mystery">
+                            <div class="mood-card">
+                                <span class="mood-emoji">🔍</span>
+                                <span class="mood-name">Mystery</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="philosophy">
+                            <div class="mood-card">
+                                <span class="mood-emoji">🧠</span>
+                                <span class="mood-name">Philosophy</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="horror">
+                            <div class="mood-card">
+                                <span class="mood-emoji">👻</span>
+                                <span class="mood-name">Horror</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="poetry">
+                            <div class="mood-card">
+                                <span class="mood-emoji">✨</span>
+                                <span class="mood-name">Poetry</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" th:field="*{mood}" value="adventure">
+                            <div class="mood-card">
+                                <span class="mood-emoji">🗺️</span>
+                                <span class="mood-name">Adventure</span>
+                            </div>
+                        </label>
+                    </div>
+                    <p class="mood-hint">✦ If all tables are occupied, we'll offer you a complimentary book while you
+                        wait!</p>
+                </div>
+
+                <!-- Special Requests -->
+                <div class="field-group">
+                    <label class="field-label">Special Requests</label>
+                  <input type="text"
+       class="field-input"
+       th:field="*{special_request}"
+       placeholder="Candles, window seat, quiet corner...">
+                </div>
+<th:block th:if="${session.loggedUser != null}">
+    <button type="submit" class="btn-submit">
+        Check Availability →
+    </button>
+</th:block>
+
+<th:block th:if="${session.loggedUser == null}">
+    <a th:href="@{/}" class="btn-submit" style="text-decoration: none; text-align: center; display: block; width: 100%;">
+        Sign Up to Check Availability →
+    </a>
+</th:block>
+                <a th:href="@{/home}" class="btn-home">← Back to Home</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- TRUST STRIP -->
+    <div class="trust-strip">
+        <div class="trust-item">
+            <span class="trust-icon">⭐</span>
+            <span class="trust-val">4.9</span>
+            <span class="trust-label">Google Rating</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-icon">🍽️</span>
+            <span class="trust-val">24</span>
+            <span class="trust-label">Premium Tables</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-icon">💜</span>
+            <span class="trust-val">10K+</span>
+            <span class="trust-label">Happy Guests</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-icon">📚</span>
+            <span class="trust-val">200+</span>
+            <span class="trust-label">Books in Library</span>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-glow">
+            <a href="friends-cafe-home.html" class="footer-logo">Friends <em>Cafe</em> Bar</a>
+            <p class="footer-tagline">"Where every cup tells a story of friendship, trust & love"</p>
+        </div>
+        <div class="footer-social">
+            <a href="#" title="Instagram">📷</a>
+            <a href="#" title="Facebook">📘</a>
+            <a href="#" title="WhatsApp">💬</a>
+            <a href="#" title="Twitter">🐦</a>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2026 Friends Cafe Bar. All rights reserved.</p>
+            <div class="footer-badge">☕ Brewed with love in Ahmedabad, India 🇮🇳</div>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+ <script>
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
+
+    // Set minimum date = today
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("min", today);
+
+    // Time validation
+    dateInput.addEventListener("change", function () {
+        const selectedDate = dateInput.value;
+        const now = new Date();
+
+        const currentDate = now.toISOString().split("T")[0];
+        const currentTime = now.toTimeString().slice(0, 5);
+
+        if (selectedDate === currentDate) {
+            // If today → block past time
+            timeInput.setAttribute("min", currentTime);
+        } else {
+            // Future date → allow all times
+            timeInput.removeAttribute("min");
+        }
+    });
+</script>
+</body>
+
+</html>

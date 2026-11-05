@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Order — Friends Cafe Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           ULTRA-PREMIUM ADMIN THEME - FRIENDS CAFE
+           Theme: Obsidian Espresso & Liquid Gold
+           ========================================================================== */
+           
+        :root {
+            --sidebar-width: 280px;
+
+            /* Deep Obsidian/Espresso Backgrounds */
+            --bg-body: #050302;         
+            --bg-card: #0A0705;         
+            
+            /* Typography */
+            --text-primary: #FFFFFF;
+            --text-muted: #A39185;
+            --text-gold: #E5C158;
+            
+            /* Borders & Accents */
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(229, 193, 88, 0.2);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            
+            /* Subtle texture overlay */
+            background-image: radial-gradient(circle at 50% 0%, rgba(229, 193, 88, 0.03) 0%, transparent 70%),
+                              url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+        }
+
+        /* ===== MAIN CONTENT LAYOUT ===== */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* ===== EDIT CARD (Glassmorphism) ===== */
+        .edit-container {
+            width: 100%;
+            max-width: 750px;
+            background: var(--bg-card);
+            padding: 50px 60px;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-faint);
+            position: relative;
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .edit-container::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHY ===== */
+        h2 { font-family: 'Cormorant Garamond', serif; font-size: 42px; margin-bottom: 5px; font-weight: 300; letter-spacing: 1px; color: var(--text-primary); }
+        h2 em { font-style: italic; color: var(--text-gold); }
+        .subtitle { color: var(--text-muted); margin-bottom: 40px; font-weight: 400; font-size: 15px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-faint); padding-bottom: 20px;}
+
+        /* ===== FORM FIELDS ===== */
+        .field-group { margin-bottom: 25px; }
+        .field-label { display: block; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; color: var(--text-muted); }
+        
+        .field-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border-faint);
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 15px;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.02);
+            transition: var(--transition);
+        }
+        
+        .field-input:focus { outline: none; border-color: var(--text-gold); background: rgba(0,0,0,0.5); box-shadow: 0 0 15px rgba(229, 193, 88, 0.1); }
+        .field-input::placeholder { color: rgba(255,255,255,0.2); }
+        
+        .locked { background: rgba(0,0,0,0.4); cursor: not-allowed; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.1); }
+        
+        /* ===== RADIO BUTTONS & GRIDS ===== */
+        .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        
+        .option-label {
+            border: 1px solid var(--border-faint);
+            background: rgba(255,255,255,0.02);
+            padding: 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+        
+        .option-label:hover { border-color: rgba(229, 193, 88, 0.4); background: rgba(229, 193, 88, 0.05); }
+        
+        /* Custom styling for standard radio/checkboxes inside dark mode */
+        input[type="radio"], input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: var(--text-gold); cursor: pointer;
+        }
+        
+        .extras-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-faint);
+        }
+        
+        .check-item {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+            font-size: 14px; cursor: pointer; color: var(--text-primary); transition: 0.3s;
+        }
+        .check-item:hover { color: var(--text-gold); }
+        .check-item:last-child { margin-bottom: 0; }
+
+        /* ===== ACTION BUTTONS ===== */
+        .btn-submit {
+            background: var(--text-gold);
+            color: #000;
+            padding: 16px 40px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 12px;
+            transition: var(--transition);
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(229, 193, 88, 0.2);
+        }
+        .btn-submit:hover {
+            background: #F4D37A;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(229, 193, 88, 0.3);
+        }
+        
+        .btn-cancel {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: 0.3s;
+            padding: 14px 24px;
+            border-radius: 50px;
+            border: 1px solid transparent;
+        }
+        .btn-cancel:hover { color: #E53E3E; background: rgba(229, 62, 62, 0.05); border-color: rgba(229, 62, 62, 0.2); }
+    </style>
+</head>
+<body>
+    <div th:replace="fragments/admin-sidebar :: sidebar"></div>
+
+    <div class="main-content">
+        <div class="edit-container">
+            <h2>Edit <em>Order</em></h2>
+            <p class="subtitle">Update item details, extras, or special requests for this order.</p>
+
+            <form th:action="@{/specific/update}" th:object="${s_orders}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="field-group">
+                    <label class="field-label">Customer Name</label>
+                    <input type="text" class="field-input" th:field="*{customerName}" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="field-group">
+                        <label class="field-label">Base Item (Read-only)</label>
+                        <input type="text" class="field-input locked" th:field="*{itemName}" readonly>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Quantity</label>
+                        <input type="number" class="field-input" th:field="*{quantity}" min="1" max="10">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Order Size</label>
+                    <div class="radio-grid">
+                        <label class="option-label"><input type="radio" th:field="*{size}" value="Regular"> Regular</label>
+                        <label class="option-label"><input type="radio" th:field="*{size}" value="Medium"> Medium (+₹30)</label>
+                        <label class="option-label"><input type="radio" th:field="*{size}" value="Large"> Large (+₹50)</label>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Payment Method</label>
+                    <div class="radio-grid">
+                        <label class="option-label"><input type="radio" th:field="*{paymentMethod}" value="Pay at Counter"> Pay at Counter</label>
+                        <label class="option-label"><input type="radio" th:field="*{paymentMethod}" value="UPI Payment"> UPI Payment</label>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Add-ons & Extras</label>
+                    <div class="extras-box">
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{extras}" value="Extra Espresso Shot"> ⚡ Extra Shot (+₹30)
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{extras}" value="Whipped Cream"> 🍦 Whipped Cream (+₹20)
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{extras}" value="Caramel Drizzle"> 🍯 Caramel Drizzle (+₹15)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Special Instructions</label>
+                    <textarea class="field-input" th:field="*{specialNotes}" rows="3" placeholder="e.g., Less sugar, extra hot..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Total Amount (₹)</label>
+                    <input type="number" class="field-input" th:field="*{totalAmount}" required>
+                </div>
+
+                <div style="margin-top: 45px; display: flex; gap: 20px; align-items: center; border-top: 1px solid var(--border-faint); padding-top: 30px;">
+                    <button type="submit" class="btn-submit">Update Order ☕</button>
+                    <a th:href="@{/admin/orders}" class="btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

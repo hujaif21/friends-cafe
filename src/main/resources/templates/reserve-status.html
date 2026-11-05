@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Status — Friends Cafe Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styling */
+        :root { --cream: #F5EFE6; --warm-white: #FDFAF6; --espresso: #1C0F0A; --brown: #3D1F10; --caramel: #C28A50; --gold: #D4A85A; --muted: #8C7B6E; --border: rgba(194, 138, 80, 0.2); }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Jost', sans-serif; background: var(--warm-white); color: var(--espresso); min-height: 100vh; overflow-x: hidden; }
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 60px; height: 72px; display: flex; align-items: center; justify-content: space-between; background: rgba(28, 15, 10, 0.97); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212, 168, 90, 0.12); }
+        .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: white; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+        .nav-links { display: flex; gap: 40px; list-style: none; align-items: center; }
+        .nav-links a { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255, 255, 255, 0.65); text-decoration: none; transition: 0.3s; font-weight: 400; }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        
+        /* Hero Section */
+        .hero { height: 45vh; min-height: 340px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1920&q=90') center/cover; transform: scale(1.05); animation: heroZoom 12s ease-out forwards; }
+        .hero-bg.waiting-bg { background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=90'); }
+        @keyframes heroZoom { to { transform: scale(1); } }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18, 8, 3, 0.55) 0%, rgba(28, 15, 10, 0.85) 100%); }
+        .hero-content { position: relative; z-index: 2; animation: fadeUp 0.9s ease forwards; }
+        .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; }
+        .hero-eyebrow span { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); }
+        .eyebrow-line { width: 40px; height: 1px; background: var(--gold); opacity: 0.6; }
+        .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 5vw, 70px); color: white; font-weight: 300; line-height: 1; margin-bottom: 14px; }
+        .hero h1 em { font-style: italic; color: var(--gold); }
+        .hero p { font-size: 15px; color: rgba(255, 255, 255, 0.55); font-weight: 300; max-width: 440px; margin: 0 auto; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Status Wrapper & Scenes */
+        .status-wrapper { max-width: 720px; margin: 0 auto; padding: 70px 40px 100px; position: relative; }
+        .status-wrapper::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 50px; background: linear-gradient(180deg, var(--gold) 0%, transparent 100%); }
+        .scene { display: none; }
+        .scene.active { display: block; animation: fadeUp 0.8s ease; }
+        
+        /* Welcome Card */
+        .welcome-card { background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06); text-align: center; }
+        .welcome-header { background: linear-gradient(135deg, var(--espresso), var(--brown)); padding: 50px 40px 44px; position: relative; }
+        .welcome-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; box-shadow: 0 10px 30px rgba(212, 168, 90, 0.3); animation: popIn 0.6s 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        .welcome-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: white; margin-bottom: 8px; }
+        .welcome-header h2 em { font-style: italic; color: var(--gold); }
+        .welcome-header p { font-size: 14px; color: rgba(255, 255, 255, 0.55); font-weight: 300; max-width: 400px; margin: 0 auto; position: relative; z-index: 2; }
+        .welcome-body { padding: 40px; }
+        .welcome-message { background: rgba(212, 168, 90, 0.06); border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px; margin-bottom: 32px; text-align: left; }
+        .welcome-message .msg-greeting { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--espresso); margin-bottom: 8px; }
+        .welcome-message .msg-greeting em { font-style: italic; color: var(--caramel); }
+        .welcome-message p { font-size: 14px; color: var(--muted); line-height: 1.8; font-weight: 300; }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+        .detail-item { background: var(--warm-white); border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px; text-align: left; }
+        .detail-item-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+        .detail-item-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--espresso); font-weight: 600; }
+        
+        /* Waiting Card */
+        .waiting-card { background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06); }
+        .waiting-header { background: var(--espresso); padding: 40px; text-align: center; }
+        .waiting-header-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+        .waiting-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: white; margin-bottom: 10px; }
+        .waiting-header h2 em { font-style: italic; color: var(--gold); }
+        .waiting-header p { font-size: 14px; color: rgba(255, 255, 255, 0.5); font-weight: 300; max-width: 380px; margin: 0 auto; }
+        
+        /* Confetti & Popups */
+        .popup-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(28, 15, 10, 0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; padding: 24px; }
+        .popup-overlay.visible { display: flex; }
+        .popup-card { background: white; border-radius: 8px; max-width: 480px; width: 100%; text-align: center; overflow: hidden; animation: popUpSlide 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes popUpSlide { from { opacity: 0; transform: scale(0.9) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .popup-top { background: linear-gradient(135deg, var(--espresso), var(--brown)); padding: 48px 40px 40px; position: relative; }
+        .popup-emoji { font-size: 56px; margin-bottom: 20px; display: block; }
+        .popup-top h2 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 300; color: white; margin-bottom: 10px; }
+        .popup-top p { font-size: 14px; color: rgba(255, 255, 255, 0.55); font-weight: 300; }
+        .popup-bottom { padding: 36px 40px; }
+        .popup-btn { background: var(--gold); color: var(--espresso); padding: 14px 40px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; border: none; border-radius: 2px; cursor: pointer; transition: 0.3s; }
+        .popup-btn:hover { background: var(--espresso); color: var(--gold); transform: translateY(-2px); }
+        .confetti-container { position: fixed; inset: 0; z-index: 10000; pointer-events: none; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; top: -10px; opacity: 0; }
+        .confetti.active { animation: confettiFall 3s ease-out forwards; }
+        @keyframes confettiFall { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 100% { opacity: 0; transform: translateY(100vh) rotate(720deg); } }
+      
+      /* ========== PREMIUM ACTION BUTTONS ========== */
+        .status-actions { 
+            display: flex; flex-direction: column; gap: 16px; margin-top: 40px; align-items: center; 
+            animation: fadeUp 0.6s 0.5s ease both; 
+        }
+        .actions-row-top { display: flex; gap: 16px; width: 100%; justify-content: center; flex-wrap: wrap; }
+        
+        .btn-premium-gold { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; 
+            background: var(--gold); color: #000 !important; padding: 16px 36px; font-family: 'Jost', sans-serif; 
+            font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; border: none; 
+            border-radius: 50px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            text-decoration: none; box-shadow: 0 10px 25px rgba(212, 168, 90, 0.25); flex: 1; min-width: 220px;
+        }
+        .btn-premium-gold:hover { background: #F4D37A; transform: translateY(-3px); box-shadow: 0 15px 35px rgba(212, 168, 90, 0.45); }
+
+        .btn-premium-dark { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; 
+            background: var(--espresso); color: var(--gold) !important; padding: 16px 36px; 
+            font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; 
+            font-weight: 600; border: 1px solid rgba(212, 168, 90, 0.3); border-radius: 50px; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); text-decoration: none; flex: 1; min-width: 220px;
+        }
+        .btn-premium-dark:hover { background: #000; border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(28, 15, 10, 0.3); }
+
+        .btn-ghost-text { 
+            display: inline-flex; align-items: center; color: var(--muted); padding: 12px 24px; 
+            font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; 
+            font-weight: 600; transition: all 0.3s ease; text-decoration: none; border-radius: 50px; margin-top: 8px;
+        }
+        .btn-ghost-text:hover { color: var(--espresso); background: rgba(28, 15, 10, 0.04); transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a th:href="@{/home}" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+              <li><a th:href="@{/combos}">Order Combo</a></li>
+            <li><a th:href="@{/reservation}" class="active">Reserve</a></li>
+            <li><a th:href="@{/track-table}" class="nav-cta">Track Table</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow"><div class="eyebrow-line"></div><span>Reservation Status</span><div class="eyebrow-line"></div></div>
+            <h1 id="heroTitle">Your <em>Table</em></h1>
+            <p id="heroSubtitle">Checking availability for your perfect evening...</p>
+        </div>
+    </section>
+
+    <div class="status-wrapper">
+        
+        <div class="scene" id="sceneAvailable">
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <div class="welcome-icon">🎉</div>
+                    <h2>Table <em>Confirmed!</em></h2>
+                    <p>Your spot has been reserved. We can't wait to welcome you.</p>
+                </div>
+                <div class="welcome-body">
+                    <div class="welcome-message">
+                        <div class="msg-greeting">Welcome, <em id="guestNameDisplay">Friend</em> 💛</div>
+                        
+                        <div style="margin-bottom: 12px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600;">
+                            Booking ID: <span id="displayBookingId" style="color: var(--espresso); background: rgba(212, 168, 90, 0.2); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--gold);">RES-XX</span>
+                        </div>
+                        
+                        <p>Your table is ready. A warm cup and warmer smiles await you at Friends Cafe Bar.</p>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item"><div class="detail-item-label">Date</div><div class="detail-item-val" id="detailDate">—</div></div>
+                        <div class="detail-item"><div class="detail-item-label">Time</div><div class="detail-item-val" id="detailTime">—</div></div>
+                        <div class="detail-item"><div class="detail-item-label">Guests</div><div class="detail-item-val" id="detailGuests">—</div></div>
+                        <div class="detail-item"><div class="detail-item-label">Occasion</div><div class="detail-item-val" id="detailOccasion">—</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-actions">
+                <div class="actions-row-top">
+                    <a href="#" id="smartTrackBtn" class="btn-premium-gold">Track Status Live <span>→</span></a>
+                    <a th:href="@{/friendship-wall}" class="btn-premium-dark">Friendship Wall <span>💛</span></a>
+                </div>
+                <a th:href="@{/home}" class="btn-ghost-text"><span style="margin-right: 6px; font-size: 14px;">←</span> Return to Home</a>
+            </div>
+        </div>
+
+        <div class="scene" id="sceneWaiting">
+            <div class="waiting-card">
+                <div class="waiting-header">
+                    <span class="waiting-header-icon">🕯️</span>
+                    <h2>We're <em>Fully Booked</em></h2>
+                    <p>You have been placed on the waitlist. Track your Booking ID to see when a table opens!</p>
+                </div>
+                <div style="padding: 40px; text-align: center;">
+                    <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px;">Your Waitlist ID</div>
+                    <div id="waitlistBookingId" style="font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--gold);">RES-XX</div>
+                </div>
+            </div>
+            
+            <div class="status-actions">
+                <div class="actions-row-top">
+                    <a href="#" id="smartWaitlistTrackBtn" class="btn-premium-gold">Track Live Status <span>→</span></a>
+                </div>
+                <a th:href="@{/home}" class="btn-ghost-text"><span style="margin-right: 6px; font-size: 14px;">←</span> Return to Home</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="popup-overlay" id="welcomePopup">
+        <div class="popup-card">
+            <div class="popup-top">
+                <span class="popup-emoji">✨</span>
+                <h2>Welcome to <em>Friends</em></h2>
+                <p>Your table has been reserved successfully.</p>
+            </div>
+            <div class="popup-bottom">
+                <button class="popup-btn" onclick="closePopup()">View Details</button>
+            </div>
+        </div>
+    </div>
+    <div class="confetti-container" id="confettiBox"></div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const guestName = params.get('name') || 'Friend';
+        const resDate = params.get('date') || '';
+        const resTime = params.get('time') || '';
+        const guestCount = params.get('guests') || '2';
+        const occasion = params.get('occasion') || 'friends';
+        const rawId = params.get('id'); 
+        const bookingIdText = rawId ? 'RES-' + rawId : 'N/A (Preview Mode)';
+        const backendOutcome = params.get('outcome') || 'available'; 
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            try {
+                const d = new Date(dateStr + 'T00:00:00');
+                if (isNaN(d.getTime())) return dateStr;
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+            } catch(e) { return dateStr; }
+        }
+        function formatTime(timeStr) {
+            if (!timeStr) return '—';
+            try {
+                const [h, m] = timeStr.split(':');
+                const hr = parseInt(h);
+                const ampm = hr >= 12 ? 'PM' : 'AM';
+                return (hr % 12 || 12) + ':' + m + ' ' + ampm;
+            } catch(e) { return timeStr; }
+        }
+
+        try {
+            document.getElementById('guestNameDisplay').textContent = guestName;
+            document.getElementById('detailDate').textContent = formatDate(resDate);
+            document.getElementById('detailTime').textContent = formatTime(resTime);
+            document.getElementById('detailGuests').textContent = guestCount;
+            document.getElementById('detailOccasion').textContent = occasion.toUpperCase();
+            
+            if (document.getElementById('displayBookingId')) {
+                document.getElementById('displayBookingId').textContent = bookingIdText;
+            }
+            if (document.getElementById('waitlistBookingId')) {
+                document.getElementById('waitlistBookingId').textContent = bookingIdText;
+            }
+
+            if (rawId) {
+                const trackUrl = '/track-table/search?displayId=' + rawId;
+                if(document.getElementById('smartTrackBtn')) document.getElementById('smartTrackBtn').href = trackUrl;
+                if(document.getElementById('smartWaitlistTrackBtn')) document.getElementById('smartWaitlistTrackBtn').href = trackUrl;
+            }
+        } catch (error) {
+            console.error("Minor display error, but proceeding...", error);
+        }
+
+        // Show Correct Scene Logic
+        if (backendOutcome === 'waiting') {
+            document.getElementById('sceneWaiting').classList.add('active');
+            document.getElementById('heroTitle').innerHTML = 'Please <em>Wait</em>';
+            document.getElementById('heroSubtitle').textContent = 'We are currently full. You are on the waitlist.';
+            document.getElementById('heroBg').classList.add('waiting-bg');
+        } else {
+            document.getElementById('sceneAvailable').classList.add('active');
+            document.getElementById('heroTitle').innerHTML = 'Table <em>Confirmed</em>';
+            document.getElementById('heroSubtitle').textContent = 'Your perfect spot is reserved and waiting.';
+            
+            setTimeout(() => {
+                document.getElementById('welcomePopup').classList.add('visible');
+                document.body.style.overflow = 'hidden';
+                const box = document.getElementById('confettiBox');
+                const colors = ['#D4A85A', '#C28A50', '#F5EFE6'];
+                for (let i = 0; i < 40; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.width = el.style.height = (6 + Math.random() * 8) + 'px';
+                    el.style.animationDelay = (Math.random() * 1.5) + 's';
+                    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    box.appendChild(el);
+                    setTimeout(() => el.classList.add('active'), 50);
+                }
+            }, 800);
+        }
+
+        function closePopup() {
+            document.getElementById('welcomePopup').classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>

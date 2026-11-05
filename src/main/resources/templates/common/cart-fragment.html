@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <div th:fragment="cart-icon" class="cart-wrapper">
+        <a th:href="@{/cart}" class="cart-icon-btn">
+            <div class="cart-visual-container">
+                <i class="bi bi-cart3"></i> 
+                <span class="cart-count-badge" th:text="${cartCount != null ? cartCount : '0'}">0</span>
+            </div>
+        </a>
+
+        <style>
+            .cart-wrapper {
+                display: inline-flex;
+                align-items: center;
+                margin-left: 20px; 
+            }
+            .cart-icon-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 45px;
+                height: 45px;
+                background: rgba(194, 155, 87, 0.05);
+                border: 1px solid rgba(194, 155, 87, 0.2);
+                border-radius: 50%; 
+                text-decoration: none !important;
+                transition: all 0.4s ease;
+                position: relative;
+            }
+            .cart-visual-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            }
+            .cart-visual-container i {
+                font-size: 1.2rem;
+                color: #C29B57; 
+                transition: transform 0.3s ease;
+            }
+            .cart-count-badge {
+                position: absolute;
+                top: -8px;
+                right: -10px;
+                background: #C29B57; 
+                color: #0a0806; 
+                font-size: 0.65rem;
+                font-weight: 800;
+                min-width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                border: 2px solid #0a0806; 
+            }
+            .cart-icon-btn:hover {
+                background: #C29B57;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(194, 155, 87, 0.3);
+            }
+            .cart-icon-btn:hover i {
+                color: #0a0806; 
+            }
+        </style>
+    </div>
+    </body>
+</html>

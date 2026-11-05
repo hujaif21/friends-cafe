@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User | Friends Cafe Admin</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           ULTRA-PREMIUM ADMIN MAIN CONTENT - FRIENDS CAFE
+           Theme: Obsidian Espresso & Liquid Gold
+           ========================================================================== */
+           
+        :root {
+            --sidebar-width: 280px;
+
+            /* Deep Obsidian/Espresso Backgrounds */
+            --bg-body: #050302;         
+            --bg-card: #0A0705;         
+            --bg-table-header: rgba(255, 255, 255, 0.02);
+            --bg-row-hover: rgba(229, 193, 88, 0.04);
+            
+            /* Typography */
+            --text-primary: #FFFFFF;
+            --text-muted: #A39185;
+            --text-gold: #E5C158;
+            
+            /* Borders & Accents */
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(229, 193, 88, 0.2);
+            
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            
+            /* Subtle texture overlay */
+            background-image: radial-gradient(circle at 50% 0%, rgba(229, 193, 88, 0.03) 0%, transparent 70%),
+                              url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+        }
+
+        /* ===== MAIN CONTENT LAYOUT ===== */
+        .main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 30px;
+            width: calc(100% - var(--sidebar-width));
+            display: flex;
+            flex-direction: column;
+            max-width: 100%; 
+            overflow-x: hidden; 
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-faint);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+        
+        .header h1 em {
+            color: var(--text-gold);
+            font-style: italic;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ===== FORM CARD (Glassmorphism) ===== */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-faint);
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Constrain width for forms */
+            padding: 40px;
+        }
+        
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-glow), transparent); opacity: 0.5;
+        }
+
+        /* ===== FORM FIELDS (Matched to theme variables) ===== */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-faint);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            outline: none;
+            font-family: inherit;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--border-glow);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(229, 193, 88, 0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-submit {
+            background: var(--text-gold);
+            color: #000;
+            padding: 14px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(229, 193, 88, 0.15);
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            background: #F4D37A;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(229, 193, 88, 0.3);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-faint);
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            transition: var(--transition);
+            margin-top: 15px;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) { 
+            .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px 20px;} 
+        }
+        @media (max-width: 768px) { 
+            body { flex-direction: column; } 
+            .main { margin-left: 0; width: 100%; padding: 20px 15px; } 
+            .header h1 { font-size: 26px; }
+            .card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="fragments/admin-sidebar :: sidebar"></div>
+
+    <div class="main">
+        <div class="header">
+            <div>
+                <h1>Update <em>User</em></h1>
+                <p>Modify member profile</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <form th:action="@{/updateUser}" th:object="${user}" method="post">
+                
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{password}"/>
+                <input type="hidden" th:field="*{role}"/>
+                <input type="hidden" th:field="*{loginCount}"/>
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" th:field="*{username}" class="form-control" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required autocomplete="email">
+                </div>
+
+                <div style="margin-top: 35px;">
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                    <a th:href="@{/loginData}" class="btn-cancel">Cancel and Return</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

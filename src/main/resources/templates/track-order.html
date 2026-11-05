@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order — Friends Cafe Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5EFE6; --warm-white: #FDFAF6; --espresso: #1C0F0A;
+            --brown: #3D1F10; --caramel: #C28A50; --gold: #D4A85A;
+            --muted: #8C7B6E; --border: rgba(194, 138, 80, 0.2); --green: #2a7a4a;
+            --shadow-soft: 0 20px 40px rgba(28, 15, 10, 0.08);
+            --shadow-hover: 0 25px 50px rgba(212, 168, 90, 0.15);
+            --radius-pill: 50px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Jost', sans-serif; background: var(--warm-white); color: var(--espresso); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ========== AMBIENT BACKGROUND ========== */
+        .page-bg { position: fixed; inset: 0; z-index: -2; background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&q=80') center/cover no-repeat; }
+        .page-bg-overlay { position: fixed; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(245, 235, 220, 0.85) 0%, rgba(240, 228, 210, 0.9) 35%, rgba(248, 240, 228, 0.95) 100%); backdrop-filter: blur(5px); }
+        .page-bg-overlay::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; }
+
+        /* ========== NAVBAR ========== */
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 60px; height: 72px; display: flex; align-items: center; justify-content: space-between; background: rgba(28, 15, 10, 0.97); backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(212, 168, 90, 0.12); }
+        .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: white; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+        .nav-links { display: flex; gap: 40px; list-style: none; align-items: center; }
+        .nav-links a { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255, 255, 255, 0.65); text-decoration: none; transition: color 0.3s; font-weight: 400; }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        .nav-cta { background: var(--gold); color: var(--espresso) !important; padding: 9px 24px; border-radius: 2px; font-weight: 600 !important; transition: all 0.3s; }
+        .nav-cta:hover { background: white !important; }
+
+        /* ========== HERO ========== */
+        .hero { height: 35vh; min-height: 300px; position: relative; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; text-align: center; padding-top: 110px; }
+        .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1920&q=90') center/cover no-repeat; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18, 8, 3, 0.7) 0%, rgba(28, 15, 10, 0.95) 100%); }
+        .hero-content { position: relative; z-index: 2; animation: fadeUp 0.8s ease forwards; }
+        .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px); color: white; font-weight: 300; line-height: 1; margin-bottom: 8px; }
+        .hero h1 em { font-style: italic; color: var(--gold); }
+        .hero p { font-size: 14px; color: rgba(255, 255, 255, 0.6); font-weight: 300; letter-spacing: 1px; text-transform: uppercase; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ========== TRACKER LAYOUT ========== */
+        .track-wrapper {
+            max-width: 650px;
+            margin: -60px auto 80px; 
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            width: 100%;
+        }
+
+        .track-card {
+            background: white; 
+            border-radius: 20px; 
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            animation: fadeUp 0.6s 0.2s ease both; 
+            border: 1px solid rgba(0,0,0,0.04);
+            padding: 50px;
+        }
+
+        /* PREMIUM SEARCH BOX */
+        .search-box { margin-bottom: 10px; }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: var(--warm-white);
+            border: 2px solid var(--cream);
+            border-radius: var(--radius-pill);
+            padding: 6px 6px 6px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--gold);
+            background: white;
+            box-shadow: 0 0 20px rgba(212, 168, 90, 0.15);
+        }
+
+        .prefix {
+            font-family: 'Jost', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 10px;
+            font-family: 'Jost', sans-serif;
+            font-size: 18px;
+            color: var(--espresso);
+            outline: none;
+            font-weight: 500;
+        }
+
+        .input-group input::placeholder { color: var(--muted); opacity: 0.6; }
+
+        .input-group button {
+            background: var(--espresso);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--radius-pill);
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-group button:hover {
+            background: var(--caramel);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(194, 138, 80, 0.3);
+        }
+        
+        /* Error Message */
+        .error-msg {
+            background: #FFF5F5; color: #C53030; padding: 14px; border-radius: 10px;
+            font-size: 13px; font-weight: 500; text-align: center; border: 1px solid #FED7D7;
+            margin-top: 20px; animation: fadeUp 0.4s ease;
+        }
+
+        /* ========== RESULT SECTION ========== */
+        .result-section {
+            margin-top: 40px; padding-top: 40px; border-top: 1px dashed var(--border);
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .order-meta {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px;
+            background: var(--warm-white); padding: 20px 25px; border-radius: 12px; border: 1px solid var(--cream);
+        }
+        
+        .meta-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+        .meta-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--espresso); font-weight: 600; line-height: 1; }
+
+        /* ========== ANIMATED TIMELINE ========== */
+        .timeline {
+            display: flex; justify-content: space-between; position: relative; margin-bottom: 30px;
+        }
+        
+        /* Static background line */
+        .timeline::before {
+            content: ''; position: absolute; top: 28px; left: 40px; right: 40px; height: 3px;
+            background: var(--cream); z-index: 1; border-radius: 3px;
+        }
+        
+        /* Animated Progress Line */
+        .timeline-progress {
+            position: absolute; top: 28px; left: 40px; height: 3px;
+            background: var(--gold); z-index: 1; border-radius: 3px;
+            transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .step {
+            position: relative; z-index: 2; text-align: center; width: 33.33%; opacity: 0.5; transition: 0.5s ease;
+        }
+        .step.active { opacity: 1; }
+        
+        .step-icon {
+            width: 56px; height: 56px; background: white; border: 3px solid var(--cream);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px; font-size: 24px; transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            color: var(--muted);
+        }
+        
+        /* The glow and pop effect for active steps */
+        .step.active .step-icon {
+            border-color: var(--gold); background: var(--gold); color: white;
+            box-shadow: 0 0 0 6px rgba(212,168,90,0.15); transform: scale(1.1);
+        }
+        
+        .step-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--espresso); margin-bottom: 4px;}
+        .step-sub { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
+
+
+       /* ========== BACK TO HOME BUTTON ========== */
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 12px 24px;
+            border-radius: var(--radius-pill);
+            background: transparent;
+            border: 1px solid transparent;
+            margin-top: 30px;
+            animation: fadeUp 0.6s 0.4s ease both;
+        }
+
+        .btn-back-home:hover {
+            color: var(--espresso);
+            background: rgba(28, 15, 10, 0.04);
+            border-color: rgba(28, 15, 10, 0.08);
+            transform: translateY(-2px);
+        }
+        /* ========== ITEM FOOTER ========== */
+        .item-footer {
+            text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px dashed var(--border);
+        }
+        
+        .item-footer p { color: var(--espresso); font-size: 15px; }
+        .item-footer strong { color: var(--caramel); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic;}
+        .item-extras { display: inline-block; background: var(--warm-white); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--brown); margin-top: 10px; border: 1px solid var(--cream); }
+
+        /* ========== FOOTER ========== */
+        footer { background: linear-gradient(180deg, #0D0705 0%, #1a0e08 50%, #0D0705 100%); padding: 0 60px 28px; position: relative; margin-top: auto;}
+        footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--caramel) 70%, transparent 100%); }
+        .footer-glow { text-align: center; padding: 48px 0 36px; }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: white; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; display: inline-block; }
+        .footer-logo em { color: var(--gold); font-style: italic; font-weight: 300; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap; gap: 12px; }
+        .footer-copy { font-size: 11px; color: rgba(255, 255, 255, 0.15); letter-spacing: 0.5px; }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 24px; } .nav-links { display: none; }
+            .hero { height: 30vh; }
+            .track-wrapper { padding: 0 15px; }
+            .track-card { padding: 30px 20px; }
+            .input-group { flex-direction: column; border-radius: 12px; padding: 12px; gap: 10px;}
+            .input-group input { width: 100%; text-align: center; }
+            .input-group button { width: 100%; padding: 16px; border-radius: 8px;}
+            .timeline::before, .timeline-progress { left: 20px; right: 20px; }
+            footer { padding: 30px 24px 20px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-bg"></div>
+    <div class="page-bg-overlay"></div>
+
+    <nav>
+        <a th:href="@{/home}" class="nav-logo">Friends <em>Cafe</em> Bar</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/home}">Home</a></li>
+            <li><a th:href="@{/menu}">Menu</a></li>
+             <li><a th:href="@{/combos}">Order Combo</a></li>
+            <li><a th:href="@{/track}" class="active">Track Order</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Track Your <em>Brew</em></h1>
+            <p>Enter your Order ID to see live updates</p>
+        </div>
+    </section>
+
+    <div class="track-wrapper">
+        <div class="track-card">
+            
+            <form th:action="@{/track-order/search}" method="get" class="search-box">
+                <div class="input-group">
+                    <span class="prefix">FCB-</span>
+                    <input type="number" name="displayId" placeholder="Enter number (e.g. 15)" required min="1">
+                    <button type="submit">Track Status</button>
+                </div>
+            </form>
+
+            <div th:if="${param.error}" class="error-msg">
+                We couldn't find that order. It may have been picked up or the ID is incorrect.
+            </div>
+
+            <div th:if="${order}" class="result-section">
+                
+                <div class="order-meta">
+                    <div>
+                        <div class="meta-label">Tracking Number</div>
+                        <div class="meta-value" th:text="'FCB-' + ${param.displayId}">FCB-00</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="meta-label">Prepared For</div>
+                        <div class="meta-value" th:text="${order.customerName}">Name</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-progress" 
+                         th:style="${order.status == 'Ready'} ? 'width: 100%;' : (${order.status == 'Brewing'} ? 'width: 50%;' : 'width: 0%;')">
+                    </div>
+
+                    <div class="step active">
+                        <div class="step-icon">📝</div>
+                        <div class="step-text">Received</div>
+                        <div class="step-sub">In Queue</div>
+                    </div>
+
+                    <div class="step" th:classappend="${order.status == 'Brewing' or order.status == 'Ready'} ? 'active' : ''">
+                        <div class="step-icon">☕</div>
+                        <div class="step-text">Brewing</div>
+                        <div class="step-sub">Barista working</div>
+                    </div>
+
+                    <div class="step" th:classappend="${order.status == 'Ready'} ? 'active' : ''">
+                        <div class="step-icon">🛍️</div>
+                        <div class="step-text">Ready</div>
+                        <div class="step-sub">Pick it up!</div>
+                    </div>
+                </div>
+                
+                <div class="item-footer">
+                    <p>Brewing: <strong th:text="${order.itemName}">Item</strong></p>
+                    <div th:if="${!#strings.isEmpty(order.extras)}" class="item-extras" th:text="'+ ' + ${order.extras}">
+                       + Extras
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <a th:href="@{/home}" class="btn-back-home">
+                <span style="margin-right: 8px; font-size: 14px;">←</span> Return to Home
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-glow">
+            <a th:href="@{/home}" class="footer-logo">Friends <em>Cafe</em> Bar</a>
+            <p class="footer-tagline">"Where every cup tells a story of friendship, trust & love"</p>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2026 Friends Cafe Bar. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
